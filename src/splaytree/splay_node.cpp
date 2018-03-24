@@ -13,8 +13,8 @@ SplayNode::SplayNode(int v) {
 
 // Deleting a node deletes its subtree
 SplayNode::~SplayNode() {
-	if (left) delete left;
-	if (right) delete right;
+	if (left != 0) delete left;
+	if (right != 0) delete right;
 }
 
 inline bool SplayNode::isLeftChild(SplayNode* x) {

@@ -3,10 +3,11 @@
 #include "splay_node.h"
 
 class SplayTree {
-	private:
+	public:
+		// these two are public for testing, for now
 		int size;
 		SplayNode* root;
-	public:
+
 		SplayTree();
 		~SplayTree();
 		int getSize();

@@ -41,7 +41,11 @@ void SplayTree::insert(int val) {
 		root = new SplayNode(val);
 	} else {
 		std::pair<SplayNode*, SplayNode*> halves = SplayNode::split(root, val);
-		if (halves.first != 0 && halves.first->key == val) return; // element already exists
+		if (halves.first != 0 && halves.first->key == val) {
+			// Element already exists
+			root = SplayNode::join(halves.first, halves.second);
+			return;
+		}
 		root = new SplayNode(val);
 		root->left = halves.first;
 		root->right = halves.second;
