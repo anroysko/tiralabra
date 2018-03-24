@@ -6,9 +6,11 @@ Kyseiset tietorakenteet on valittu koska niillä saadaan ratkaistua maximum flow
 
 Ohjelma saa syötteeksi suunnatun verkon, edgejen kapasiteetit ja sinkin sekä sourcen indeksit verkossa. Ohjelman teen C++:lla. Se tuottaa jonkin maksimaalisen flown kyseiselle graafille.
 
-Algoritmin aikavaatimus on $O(V\ E\ log(V))$, missä V on vertexien määrä ja E Edgejen määrä.
+Algoritmin aikavaatimus on O(VE log(V)), missä V on vertexien määrä ja E Edgejen määrä.
 
-[https://en.wikipedia.org/wiki/Dinic's_algorithm](Dinic's algorithm)
-[url{https://en.wikipedia.org/wiki/Link/cut_tree](Link/Cut tree)
-[url{https://en.wikipedia.org/wiki/Maximum_flow_problem](Maximum flow problem)
+[Dinic's Algorithm](https://en.wikipedia.org/wiki/Dinic's_algorithm])
+
+[Link/Cut tree](https://en.wikipedia.org/wiki/Link/cut_tree)
+
+[Maximum flow problem](https://en.wikipedia.org/wiki/Maximum_flow_problem)
 
