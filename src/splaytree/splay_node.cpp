@@ -5,10 +5,10 @@
 #include "splay_node.h"
 
 SplayNode::SplayNode(int v) {
-	left = 0;
-	right = 0;
-	parent = 0;
-	key = v;
+	left = 0;	// left child
+	right = 0;	// right child
+	parent = 0;	// parent
+	key = v;	// key; the value the binary tree is sorted by
 }
 
 // Deleting a node deletes its subtree
@@ -17,6 +17,7 @@ SplayNode::~SplayNode() {
 	if (right != 0) delete right;
 }
 
+// returns true if x is its parents left child
 inline bool SplayNode::isLeftChild(SplayNode* x) {
 	assert(x != 0);
 	assert(x->parent != 0);
@@ -165,6 +166,7 @@ SplayNode* SplayNode::find(SplayNode* root, int val) {
 
 	SplayNode* x = root;
 	while(true) {
+		// try to find node with given value
 		if (x->key == val) break;
 		if (x->key < val) {
 			if (x->right == 0) break;
@@ -184,7 +186,7 @@ SplayNode* SplayNode::findMax(SplayNode* root) {
 	assert(root != 0);
 	
 	SplayNode* x = root;
-	while(x->right != 0) x = x->right;
+	while(x->right != 0) x = x->right;	// node with max key is the rightmost element in the tree
 	splay(x);
 	return x;
 }
@@ -205,9 +207,8 @@ SplayNode* SplayNode::findMin(SplayNode* root) {
 SplayNode* SplayNode::join(SplayNode* a_root, SplayNode* b_root) {
 	if (a_root == 0) return b_root;
 	if (b_root == 0) return a_root;
-	a_root = findMax(a_root);
-	assert(a_root->right == 0); // finding maximum and splaying on it means that it has no right child
-	// link a_root and b_root
+	a_root = findMax(a_root);	// Finds maximum in a's subtree, splays it to the top.
+	// Since maximum has no right child, set a_root's right child to be b_root
 	a_root->right = b_root;
 	b_root->parent = a_root;
 	return a_root;
@@ -217,14 +218,16 @@ SplayNode* SplayNode::join(SplayNode* a_root, SplayNode* b_root) {
 // "first" contains all nodes with keys less than or equal to val
 std::pair<SplayNode*, SplayNode*> SplayNode::split(SplayNode* root, int val) {
 	if (root == 0) return {0,0};
-	root = find(root, val);
+	root = find(root, val);	// root is either maximum less than or equal to val, or minimum larger than val
 	if (root->key <= val) {
+		// root is maximum less than or equal to val
 		// root is max element in "first"
 		SplayNode* second = root->right;
 		root->right = 0;
 		if (second) second->parent = 0;
 		return {root, second};
 	} else {
+		// root is minimum larger than val
 		// root is min element in "second"
 		SplayNode* first = root->left;
 		root->left = 0;
@@ -233,7 +236,8 @@ std::pair<SplayNode*, SplayNode*> SplayNode::split(SplayNode* root, int val) {
 	}
 }
 
-// :: for testing ::
+// :: for debugging ::
+// Prints tree, with indentation marking depth
 void SplayNode::print(SplayNode* x, int depth) {
 	for (int i = 0; i < depth; ++i) std::cout << "  ";
 	if (x == 0) {
@@ -251,7 +255,8 @@ void SplayNode::print(SplayNode* x, int depth) {
 	}
 }
 
-// traverse tree, and every time we enter a node, print it
+// traverse tree, and every time we enter a node, add it to the list.
+// Every node appears exactly 3 times.
 // returns true if all parent pointers were correct, and false otherwise
 bool SplayNode::getTraversal(SplayNode* x, std::vector<int>& vec) {
 	if (x == 0) {

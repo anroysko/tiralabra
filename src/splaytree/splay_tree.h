@@ -4,7 +4,7 @@
 
 class SplayTree {
 	public:
-		// these two are public for testing, for now
+		// these two are public for testing, for now.
 		int size;
 		SplayNode* root;
 
