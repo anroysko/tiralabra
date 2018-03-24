@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-	splay_tree::SplayTree tree;
+	SplayTree tree;
 	
 	cout << "Amount of operations: ";
 	int m;	// amount of operations

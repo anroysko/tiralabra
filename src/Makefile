@@ -12,5 +12,10 @@ splay_tree.o : splaytree/splay_tree.cpp splaytree/splay_tree.h splaytree/splay_n
 splay_node.o : splaytree/splay_node.cpp splaytree/splay_node.h
 	g++ -c -o splay_node.o splaytree/splay_node.cpp $(CPPFLAGS)
 
+.PHONY : clean 
 clean :
 	rm main main.o splay_tree.o splay_node.o
+
+.PHONY : test
+test :
+	make -f testing/TestMakefile
