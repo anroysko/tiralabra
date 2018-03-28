@@ -18,4 +18,4 @@ clean :
 
 .PHONY : test
 test :
-	make -f testing/TestMakefile
+	cd testing && make -f TestMakefile
