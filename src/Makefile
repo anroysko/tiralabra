@@ -1,21 +1,27 @@
-CPPFLAGS = -O2 -std=c++11
+link_flags = 
+compile_flags = -O2 -std=c++11
+main = main
+tester = testing/tester
+sources = main.cpp testing/tester.cpp splaytree/splay_tree.cpp splaytree/splay_node.cpp
+objects = $(sources:.cpp=.o)
+depends = $(sources:.cpp=.d)
 
-main : main.o splay_tree.o splay_node.o
-	g++ -o main main.o splay_tree.o splay_node.o $(CPPFLAGS)
+$(main) : $(filter-out $(tester).o, $(objects))
+	g++ $(compile_flags) $^ -o $@ $(link_flags)
 
-main.o : main.cpp splaytree/splay_tree.h
-	g++ -c -o main.o main.cpp $(CPPFLAGS)
+$(tester) : $(filter-out $(main).o, $(objects))
+	g++ $(compile_flags) $^ -o $@ $(link_flags)
 
-splay_tree.o : splaytree/splay_tree.cpp splaytree/splay_tree.h splaytree/splay_node.h
-	g++ -c -o splay_tree.o splaytree/splay_tree.cpp $(CPPFLAGS)
+-include $(depends)
 
-splay_node.o : splaytree/splay_node.cpp splaytree/splay_node.h
-	g++ -c -o splay_node.o splaytree/splay_node.cpp $(CPPFLAGS)
-
-.PHONY : clean 
-clean :
-	rm main main.o splay_tree.o splay_node.o
+%.o : %.cpp
+	g++ $(compile_flags) -c -MMD $< -o $@
 
 .PHONY : test
-test :
-	cd testing && make -f TestMakefile
+test : $(tester)
+	@./$(tester)
+
+.PHONY : clean
+clean :
+	@rm -f $(main) $(tester) $(depends) $(objects)
+
