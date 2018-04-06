@@ -184,14 +184,23 @@ void SplayTree::insert(int value) {
 		root = new SplayNode(value);
 	} else {
 		// Split the tree and join the halves as the new node's children
-		lowerBound(value); // Splays rightmost, val <= value to root
-		std::pair<SplayNode*, SplayNode*> halves = split(root);
-		root = new SplayNode(value);
-		root->left = halves.first; // Contains <= values
-		root->right = halves.second; // Contains > values
-		if (root->left != 0) root->left->parent = root;
-		if (root->right != 0) root->right->parent = root;
-		root->update();
+		int lb = lowerBound(value); // Splays rightmost, val <= value to root
+		if (lb > value) {
+			// Smaller than all elements in the tree
+			SplayNode* oldRoot = root;
+			root = new SplayNode(value);
+			root->right = oldRoot;
+			oldRoot->parent = root;
+			root->update();
+		} else {
+			std::pair<SplayNode*, SplayNode*> halves = split(root);
+			root = new SplayNode(value);
+			root->left = halves.first; // Contains <= values
+			root->right = halves.second; // Contains > values
+			if (root->left != 0) root->left->parent = root;
+			if (root->right != 0) root->right->parent = root;
+			root->update();
+		}
 	}
 }
 
