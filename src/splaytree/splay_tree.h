@@ -1,21 +1,41 @@
 #ifndef __SPLAYTREE_SPLAY_TREE_H_
 #define __SPLAYTREE_SPLAY_TREE_H_
-#include "splay_node.h"
+
+#include "splay_functions.h"
+#include <vector>
+
+struct SplayNode {
+	SplayNode* left;
+	SplayNode* right;
+	SplayNode* parent;
+	int val;
+	int size; // subtree size
+	
+	SplayNode(int v);
+	~SplayNode();
+	void update();
+	static int getIndex(SplayNode* x);
+	static SplayNode* findKth(SplayNode* root, int k);
+	static void print(SplayNode* x, int depth = 0);
+	static bool getTraversal(SplayNode* x, std::vector<int>& vec);
+};
 
 class SplayTree {
-	public:
-		// these two are public for testing, for now.
-		int size;
+	private:
 		SplayNode* root;
-
+	public:
 		SplayTree();
 		~SplayTree();
-		int getSize();
-		int findMax();
-		int findMin();
-		bool find(int val);
-		void insert(int val);
-		bool erase(int val);
+		int size();
+		int getMax();
+		int getMin();
+		int getKth(int k);
+		int lowerBound(int value);
+		int upperBound(int value);
+		bool find(int value);
+		int getInd(int value);
+		void insert(int value);
+		bool erase(int value);
 		void print();
 };
 

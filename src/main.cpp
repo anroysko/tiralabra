@@ -4,43 +4,73 @@ using namespace std;
 
 int main() {
 	SplayTree tree;
-	
-	cout << "Amount of operations: ";
-	int m;	// amount of operations
-	cin >> m;
-	cout << "Apply operations (t \\not\\in [0,6] for help)\n";
-	for (int j = 0; j < m; ++j) {
+	cout << "Apply operations (t \\not\\in [0,11] for help)\n";
+	while(true) {
 		int t;
 		cin >> t;
 		if (t == 0) {
-			// Insert
-			int x;
-			cin >> x;
-			tree.insert(x);
+			// int size()
+			cout << tree.size() << '\n';
 		} else if (t == 1) {
-			int x;
-			cin >> x;
-			cout << tree.erase(x) << '\n';
+			// int getMax()
+			cout << tree.getMax() << '\n';
 		} else if (t == 2) {
-			int x;
-			cin >> x;
-			cout << tree.find(x) << '\n';
+			// int getMin()
+			cout << tree.getMin() << '\n';
 		} else if (t == 3) {
-			cout << tree.findMax() << '\n';
+			// int getKth()
+			int k;
+			cin >> k;
+			cout << tree.getKth(k) << '\n';
 		} else if (t == 4) {
-			cout << tree.findMin() << '\n';
+			// int lowerBound(int value)
+			int value;
+			cin >> value;
+			cout << tree.lowerBound(value) << '\n';
 		} else if (t == 5) {
-			tree.print();
+			// int upperBound(int value)
+			int value;
+			cin >> value;
+			cout << tree.upperBound(value) << '\n';
 		} else if (t == 6) {
-			cout << tree.getSize() << '\n';
+			// bool find(int value)
+			int value;
+			cin >> value;
+			cout << tree.find(value) << '\n';
+		} else if (t == 7) {
+			// int getInd(int value)
+			int value;
+			cin >> value;
+			cout << tree.getInd(value) << '\n';
+		} else if (t == 8) {
+			// void insert(int value);
+			int value;
+			cin >> value;
+			tree.insert(value);
+		} else if (t == 9) {
+			// bool erase(int value);
+			int value;
+			cin >> value;
+			cout << tree.erase(value) << '\n';
+		} else if (t == 10) {
+			tree.print();
+		} else if (t == 11) {
+			break;
 		} else {
-			cout << "Operations:\n";
-			cout << "	0 x: insert node with key x\n";
-			cout << "	1 x: delete node with key x\n";
-			cout << "	2 x: find node with key x\n";
-			cout << "	3: find maximum\n";
-			cout << "	4: find minimum\n";
-			cout << "	5: print tree\n";
+			cout << "Operations:\n"
+				"	0:	int size();\n"
+				"	1:	int getMax();\n"
+				"	2:	int getMin();\n"
+				"	3:	int getKth(int k);\n"
+				"	4:	int lowerBound(int value);\n"
+				"	5:	int upperBound(int value);\n"
+				"	6:	bool find(int value);\n"
+				"	7:	int getInd(int value);\n"
+				"	8:	void insert(int value);\n"
+				"	9:	bool erase(int value);\n"
+				"	10:	void print();\n"
+				"	11:	Quit\n"
+				"	other:	help\n";
 		}
 	}
 }

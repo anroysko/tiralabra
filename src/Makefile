@@ -2,7 +2,7 @@ link_flags =
 compile_flags = -O2 -std=c++11
 main = main
 tester = testing/tester
-sources = main.cpp testing/tester.cpp splaytree/splay_tree.cpp splaytree/splay_node.cpp
+sources = main.cpp testing/tester.cpp splaytree/splay_tree.cpp
 objects = $(sources:.cpp=.o)
 depends = $(sources:.cpp=.d)
 
