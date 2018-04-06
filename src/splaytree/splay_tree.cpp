@@ -18,6 +18,10 @@ SplayNode::~SplayNode() {
 	if (right != nullptr) delete right;
 }
 
+inline bool SplayNode::isRoot() {
+	return parent == nullptr;
+}
+
 inline void SplayNode::update() {
 	size = 1;
 	if (left != nullptr) size += left->size;
@@ -52,7 +56,7 @@ SplayNode* SplayNode::findKth(SplayNode* root, int k) {
 // Prints tree, with indentation marking depth
 void SplayNode::print(SplayNode* x, int depth) {
 	for (int i = 0; i < depth; ++i) std::cout << "  ";
-	if (x == 0) {
+	if (x == nullptr) {
 		std::cout << "*\n";
 	} else {
 		std::cout << x->val << ' ';
@@ -66,7 +70,7 @@ void SplayNode::print(SplayNode* x, int depth) {
 // Every node appears exactly 3 times.
 // returns true if all parent pointers were correct, and false otherwise
 bool SplayNode::getTraversal(SplayNode* x, std::vector<int>& vec) {
-        if (x == 0) {
+        if (x == nullptr) {
                 return true;
         } else {
                 bool res = true;

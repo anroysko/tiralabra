@@ -1,9 +1,11 @@
 #include <iostream>
 #include "splaytree/splay_tree.h"
+#include "linkcut/link_cut_tree.h"
 using namespace std;
 
-int main() {
+void testSplayTree() {
 	SplayTree tree;
+	cout << "Test SplayTree\n";
 	cout << "Apply operations (t \\not\\in [0,11] for help)\n";
 	while(true) {
 		int t;
@@ -73,4 +75,65 @@ int main() {
 				"	other:	help\n";
 		}
 	}
+}
+void testLinkCutTree() {
+	LinkCutTree tree;
+	cout << "Test LinkCutTree\n";
+	cout << "Apply operations (t \\not\\in [0,7] for help)\n";
+	while(true) {
+		int t;
+		cin >> t;
+		if (t == 0) {
+			// void insert(int val);
+			int val;
+			cin >> val;
+			tree.insert(val);
+		} else if (t == 1) {
+			// void setVal(int i, int val);
+			int i, val;
+			cin >> i >> val;
+			tree.setVal(i, val);
+		} else if (t == 2) {
+			// void link(int child, int parent);
+			int child, parent;
+			cin >> child >> parent;
+			tree.link(child, parent);
+		} else if (t == 3) {
+			// void cut(int i);
+			int i;
+			cin >> i;
+			tree.cut(i);
+		} else if (t == 4) {
+			// int findRoot(int i)
+			int i;
+			cin >> i;
+			cout << tree.findRoot(i) << '\n';
+		} else if (t == 5) {
+			// int pathMin(int i)
+			int i;
+			cin >> i;
+			cout << tree.pathMin(i) << '\n';
+		} else if (t == 6) {
+			// void print()
+			tree.print();
+		} else if (t == 7) {
+			break;
+		} else {
+			cout << "Operations:\n"
+				"	0:	int insert(int val);\n"
+				"	1:	void setVal(int i, int val);\n"
+				"	2:	void link(int child, int parent);\n"
+				"	3:	void cut(int i);\n"
+				"	4:	int findRoot(int i);\n"
+				"	5:	int pathMin(int value);\n"
+				"	6:	void print();\n"
+				"	7:	quit\n"
+				"	other:	help\n";
+		}
+	}
+}
+
+int main() {
+	testLinkCutTree();
+	testSplayTree();
 }

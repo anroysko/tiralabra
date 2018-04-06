@@ -14,6 +14,7 @@ struct SplayNode {
 	SplayNode(int v);
 	~SplayNode();
 	void update();
+	inline bool isRoot();
 	static int getIndex(SplayNode* x);
 	static SplayNode* findKth(SplayNode* root, int k);
 	static void print(SplayNode* x, int depth = 0);
