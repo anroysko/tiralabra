@@ -18,11 +18,7 @@ SplayNode::~SplayNode() {
 	if (right != nullptr) delete right;
 }
 
-inline bool SplayNode::isRoot() {
-	return parent == nullptr;
-}
-
-inline void SplayNode::update() {
+void SplayNode::update() {
 	size = 1;
 	if (left != nullptr) size += left->size;
 	if (right != nullptr) size += right->size;
@@ -68,22 +64,13 @@ void SplayNode::print(SplayNode* x, int depth) {
 
 // traverse tree, and every time we enter a node, add it to the list.
 // Every node appears exactly 3 times.
-// returns true if all parent pointers were correct, and false otherwise
-bool SplayNode::getTraversal(SplayNode* x, std::vector<int>& vec) {
-        if (x == nullptr) {
-                return true;
-        } else {
-                bool res = true;
-                if ((x->left) && (x->left->parent != x)) res = false;
-                if ((x->right) && (x->right->parent != x)) res = false;
-
+void SplayNode::getTraversal(SplayNode* x, std::vector<int>& vec) {
+        if (x != nullptr) {
                 vec.push_back(x->val);
-                if (!getTraversal(x->left, vec)) res = false;
+                getTraversal(x->left, vec);
                 vec.push_back(x->val);
-                if (!getTraversal(x->right, vec)) res = false;
+                getTraversal(x->right, vec);
                 vec.push_back(x->val);
-
-                return res;
         }
 }
 
@@ -197,7 +184,7 @@ void SplayTree::insert(int value) {
 			oldRoot->parent = root;
 			root->update();
 		} else {
-			std::pair<SplayNode*, SplayNode*> halves = split(root);
+			std::pair<SplayNode*, SplayNode*> halves = splitTree(root);
 			root = new SplayNode(value);
 			root->left = halves.first; // Contains <= values
 			root->right = halves.second; // Contains > values
@@ -224,7 +211,7 @@ bool SplayTree::erase(int value) {
 		root->right = nullptr;
 		delete root; // free memory from old root
 
-		root = join(a, b);
+		root = joinTrees(a, b);
 		return true;
 	} else {
 		// element doesn't exist

@@ -1,19 +1,20 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "./../splaytree/splay_node.h"
+#include "./../splaytree/splay_functions.h"
 #include "./../splaytree/splay_tree.h"
 
 // Build SplayTree from its traversal
+// Only works with unique values
 SplayNode* buildTree(std::vector<int> traversal) {
 	SplayNode* root = new SplayNode(traversal[0]);
 	SplayNode* x = root;
 	bool re_enter = false;
 	for (int i = 1; i < traversal.size(); ++i) {
-		if ((x->parent != 0) && ((x->parent->key) == traversal[i])) {
+		if ((x->parent != 0) && ((x->parent->val) == traversal[i])) {
 			x = x->parent;
 			re_enter = true;
-		} else if (traversal[i] == x->key) {
+		} else if (traversal[i] == x->val) {
 			// no left/right child
 			re_enter = true;
 		} else {
@@ -32,25 +33,53 @@ SplayNode* buildTree(std::vector<int> traversal) {
 			}
 			re_enter = false;
 		}
+		x->update();
 	}
 	return root;
 }
 
+bool checkParentPointers(SplayNode* node) {
+	if (node == nullptr) return true;
+	if (node->left != nullptr && node->left->parent != node) return false;
+	if (node->right != nullptr && node->right->parent != node) return false;
+	if (! checkParentPointers(node->left)) return false;
+	if (! checkParentPointers(node->right)) return false;
+	return true;
+}
+
+int checkSizes(SplayNode* node) {
+	if (node == nullptr) return 0;
+	int sum = 1;
+	if (node->left != nullptr) {
+		int sub = checkSizes(node->left);
+		if (sub == -1) return -1;
+		sum += sub;
+	}
+	if (node->right != nullptr) {
+		int sub = checkSizes(node->right);
+		if (sub == -1) return -1;
+		sum += sub;
+	}
+	if (node->size != sum) return -1;
+	return sum;
+}
+
 bool compare(std::vector<int>& ans, SplayNode* root, std::string test_name) {
 	std::vector<int> res;
-	bool pps = SplayNode::getTraversal(root, res);
+	SplayNode::getTraversal(root, res);
 	bool match = (ans == res);
-	bool success = pps && match;
-
+	bool pps = checkParentPointers(root);
+	bool sizes = (checkSizes(root) != -1);
+	bool success = pps && sizes && match;
 	if (! success) {
 		std::cout << test_name << " failed: \n";
 		if (pps == false) std::cout << "Parent pointers are wrong\n";
+		if (sizes == false) std::cout << "Subtree sizes are wrong\n";
 		if (match == false) {
 			std::cout << "Traversal is wrong\n";
 			for (auto it : ans) std::cout << it << ' '; std::cout << '\n';
 			for (auto it : res) std::cout << it << ' '; std::cout << '\n';
 		}
-		SplayNode::print(root);
 	}
 	delete root;
 
@@ -76,7 +105,7 @@ bool testZig() {
 
 	SplayNode* root = buildTree(orig);
 	SplayNode* x = root->left;
-	SplayNode::zig(x);
+	zig(x);
 
 	return compare(ans, root, "testZig");
 }
@@ -99,7 +128,7 @@ bool testZag() {
 
 	SplayNode* root = buildTree(orig);
 	SplayNode* x = root->left;
-	SplayNode::zag(x);
+	zag(x);
 
 	return compare(ans, root, "testZag");
 }
@@ -141,7 +170,7 @@ bool testSplay() {
 	std::vector<int> ans  = {3,2,1,1,1,2,2,3,7,5,4,4,4,5,6,6,6,5,7,10,9,8,8,8,9,9,10,10,7,3};
 	
 	SplayNode* root = buildTree(orig);
-	root = SplayNode::find(root, 3);
+	root = SplayNode::findKth(root, 2); // Node 3 is index 2 in tree
 
 	return compare(ans, root, "testSplay");
 }
@@ -171,7 +200,7 @@ bool testJoin() {
 
 	SplayNode* a_root = buildTree(a_orig);
 	SplayNode* b_root = buildTree(b_orig);
-	SplayNode* root = SplayNode::join(a_root, b_root);
+	SplayNode* root = joinTrees(a_root, b_root);
 
 	return compare(ans, root, "testJoin");
 }
@@ -202,7 +231,7 @@ bool testSplit() {
 	std::vector<int> second_ans = {5,5,6,7,7,7,6,6,5};
 	
 	SplayNode* root = buildTree(orig);
-	std::pair<SplayNode*, SplayNode*> halves = SplayNode::split(root, 4);
+	std::pair<SplayNode*, SplayNode*> halves = splitTree(SplayNode::findKth(root, 3));
 	bool success = true;
 	if (!compare(first_ans, halves.first, "testSplit_first")) success = false;
 	if (!compare(second_ans, halves.second, "testSplit_second")) success = false;
@@ -226,6 +255,7 @@ std::pair<int, int> testSplayNode() {
 	return {correct, total};
 }
 
+/*
 // SPLAY TREE TESTS
 bool testMakeTree() {
 	SplayTree tree;
@@ -319,8 +349,9 @@ std::pair<int, int> testSplayTree() {
 	std::cout << correct << "/" << total << " tests were successful\n";
 	return {correct, total};
 }
+*/
 
 int main() {
 	testSplayNode();
-	testSplayTree();
+	//testSplayTree();
 }

@@ -14,11 +14,14 @@ struct SplayNode {
 	SplayNode(int v);
 	~SplayNode();
 	void update();
-	inline bool isRoot();
+	// Inline so defined in header
+	inline bool isRoot() {
+		return parent == nullptr;
+	}
 	static int getIndex(SplayNode* x);
 	static SplayNode* findKth(SplayNode* root, int k);
 	static void print(SplayNode* x, int depth = 0);
-	static bool getTraversal(SplayNode* x, std::vector<int>& vec);
+	static void getTraversal(SplayNode* x, std::vector<int>& vec);
 };
 
 class SplayTree {
