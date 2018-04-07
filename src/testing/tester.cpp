@@ -1,8 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <random>
+#include <stdlib.h>
 #include "./../splaytree/splay_functions.h"
 #include "./../splaytree/splay_tree.h"
+#include "./../linkcut/link_cut_functions.h"
+#include "./../linkcut/link_cut_tree.h"
 
 // Build SplayTree from its traversal
 // Only works with unique values
@@ -255,15 +259,7 @@ std::pair<int, int> testSplayNode() {
 	return {correct, total};
 }
 
-/*
 // SPLAY TREE TESTS
-bool testMakeTree() {
-	SplayTree tree;
-	if (tree.getSize() != 0 || tree.root != 0) return false;
-	return true;
-}
-
-
 bool testInsert() {
 	// Splay Tree before inserting
 	// size == 6
@@ -290,16 +286,10 @@ bool testInsert() {
 	std::vector<int> ans = {4,3,2,1,1,1,2,2,3,3,4,5,5,7,6,6,6,7,7,5,4};
 
 	SplayTree tree;
-	tree.size = 6;
 	tree.root = buildTree(orig);
 
 	tree.insert(4);
 	bool success = true;
-	if (tree.getSize() != 7) {
-		std::cout << "testInsert failed\n";
-		std::cout << "tree size is wrong\n";
-		success = false;
-	}
 	if (!compare(ans, tree.root, "testInsert")) success = false;
 	tree.root = 0; // so we won't delete the elements again
 	return success;
@@ -321,37 +311,141 @@ bool testErase() {
 	std::vector<int> ans = {3,2,1,1,1,2,2,3,5,5,7,6,6,6,7,7,5,3};
 
 	SplayTree tree;
-	tree.size = 7;
 	tree.root = buildTree(orig);
+	
 	tree.erase(4);
 	bool success = true;
-	if (tree.getSize() != 6) {
-		std::cout << "testErase failed\n";
-		std::cout << "tree size is wrong\n";
-		success = false;
-	}
 	if (!compare(ans, tree.root, "testErase")) success = false;
 	tree.root = 0; // so we won't delete the elements again
 	return success;
 }
 
-// Do unit tests for splay tree
-// returns: tests passed / total tests
 std::pair<int, int> testSplayTree() {
 	std::cout << "Testing Splay Tree\n";
 	int correct = 0;
-	int total = 3;
+	int total = 2;
 	
-	if (testMakeTree()) ++correct;
 	if (testInsert()) ++correct;
 	if (testErase()) ++correct;
 
 	std::cout << correct << "/" << total << " tests were successful\n";
 	return {correct, total};
 }
-*/
+
+bool testRandomLinkCutOperations(int ini_nodes, int queries, int maxval, int seed) {
+	// Store the represented tree
+	int nodes = ini_nodes;
+	std::vector<int> parent (nodes);
+	std::vector<int> value (nodes);
+	srand(seed);
+	for (int i = 0; i < nodes; ++i) {
+		parent[i] = -1;
+		value[i] = rand() % maxval;
+	}
+	
+	LinkCutTree tree (nodes, value);
+
+	for (int j = 0; j < queries; ++j) {
+		int t = rand() % 6;
+		if (t == 0) {
+			// insert
+			int val = rand() % maxval;
+			parent.push_back(-1);
+			value.push_back(val);
+			tree.insert(val);
+			++nodes;
+		} else if (t == 1) {
+			// setVal
+			int ind = rand() % nodes;
+			int val = rand() % maxval;
+			tree.setVal(ind, val);
+			value[ind] = val;
+		} else if (t == 2) {
+			// link
+			// Be careful not to create a loop
+			int kid = rand() % nodes;
+			int par = rand() % nodes;
+			if ((par != kid) && (parent[kid] == -1)) {
+				int tmp = par;
+				while(parent[tmp] != -1) tmp = parent[tmp];
+				if (tmp != kid) {
+					tree.link(kid, par);
+					parent[kid] = par;
+				}
+			}
+		} else if (t == 3) {
+			// cut
+			int ind = rand() % nodes;
+			parent[ind] = -1;
+			tree.cut(ind);
+		} else if (t == 4) {
+			// findRoot
+			int ind = rand() % nodes;
+			int ans = ind;
+			while(parent[ans] != -1) ans = parent[ans];
+			int tree_ans = tree.findRoot(ind);
+			if (tree_ans != ans) {
+				std::cout << "testRandomLinkCutOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "findRoot(" << ind << "): " << ans << " vs " << tree_ans << '\n';
+				if (nodes < 10) {
+					std::cout << "Parents, values:\n";
+					for (int i = 0; i < nodes; ++i) std::cout << parent[i] << ' '; std::cout << '\n';
+					for (int i = 0; i < nodes; ++i) std::cout << value[i] << ' '; std::cout << '\n';
+					std::cout << "Link/Cut tree:\n";
+					tree.print();
+				}
+				return false;
+			}
+		} else if (t == 5) {
+			// pathMin
+			int ind = rand() % nodes;
+			int cur = ind;
+			int ans = value[cur];
+			while(parent[cur] != -1) {
+				cur = parent[cur];
+				ans = std::min(ans, value[cur]);
+			}
+			int tree_ans = tree.pathMin(ind);
+			if (tree_ans != ans) {
+				std::cout << "testRandomLinkCutOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "pathMin(" << ind << "): " << ans << " vs " << tree_ans << '\n';
+				if (nodes < 10) {
+					std::cout << "Parents, values:\n";
+					for (int i = 0; i < nodes; ++i) std::cout << parent[i] << ' '; std::cout << '\n';
+					for (int i = 0; i < nodes; ++i) std::cout << value[i] << ' '; std::cout << '\n';
+					std::cout << "Link/Cut tree:\n";
+					tree.print();
+				}
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+// Do "unit" tests for splay tree
+// "Kind" of cheating since this isn't really a unit test
+// It's really hard to write tests for these >8(
+// returns: tests passed / total tests
+std::pair<int, int> testLinkCutTree() {
+	std::cout << "Testing Link/Cut tree\n";
+	int correct = 0;
+	int total = 7;
+	// initial nodes, queries, maximum value, seed
+	if ((correct == 0) && (testRandomLinkCutOperations(5, 10, 10, 0))) ++correct;
+	if ((correct == 1) && (testRandomLinkCutOperations(10, 10, 10, 1))) ++correct;
+	if ((correct == 2) && (testRandomLinkCutOperations(100, 100, 100, 2))) ++correct;
+	if ((correct == 3) && (testRandomLinkCutOperations(1000, 1000, 1000, 3))) ++correct;
+	if ((correct == 4) && (testRandomLinkCutOperations(10000, 10000, 10000, 4))) ++correct;
+	if ((correct == 5) && (testRandomLinkCutOperations(100000, 100000, 100000, 5))) ++correct;
+	if ((correct == 6) && (testRandomLinkCutOperations(1000000, 1000000, 1000000, 6))) ++correct;
+	
+	std::cout << correct << "/" << total << " tests were successful\n";
+	return {correct, total};
+}
 
 int main() {
 	testSplayNode();
-	//testSplayTree();
+	testSplayTree();
+	testLinkCutTree();
 }

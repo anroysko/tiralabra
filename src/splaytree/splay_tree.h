@@ -26,8 +26,8 @@ struct SplayNode {
 
 class SplayTree {
 	private:
-		SplayNode* root;
 	public:
+		SplayNode* root;
 		SplayTree();
 		~SplayTree();
 		int size();
