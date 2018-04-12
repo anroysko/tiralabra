@@ -48,7 +48,6 @@ SplayNode* SplayNode::findKth(SplayNode* root, int k) {
 	}
 }
 
-// :: for debugging ::
 // Prints tree, with indentation marking depth
 void SplayNode::print(SplayNode* x, int depth) {
 	for (int i = 0; i < depth; ++i) std::cout << "  ";
