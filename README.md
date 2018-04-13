@@ -5,3 +5,29 @@
 * [Viikko 1](https://github.com/anroysko/tiralabra/blob/master/doc/weekly_reports/week1.md)
 * [Viikko 2](https://github.com/anroysko/tiralabra/blob/master/doc/weekly_reports/week2.md)
 * [Viikko 3](https://github.com/anroysko/tiralabra/blob/master/doc/weekly_reports/week3.md)
+
+## Komentorivitoiminnot
+### Testaus
+Testit suoritetaan komennolla
+```
+make test
+```
+Testikattavuusraportti luodaan komennolla
+```
+make coverage
+```
+Kattavuusraportin generoinnissa käytetään lcov:ia. Sen voi asentaa komennolla
+```
+sudo apt install lcov
+```
+Kattavuusraporttia voi tarkastella avaamalla selaimella tiedosto `src/bin/cov/html/index.html`
+### Ohjelman ajaminen
+Ohjelman voi ajaa komennolla
+```
+make run
+```
+### Koodihakemiston puhdistaminen
+src-folderin voi puhdistaa kompiloitaessa luotavista tiedostoista komennolla
+```
+make clean
+```
