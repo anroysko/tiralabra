@@ -2,7 +2,9 @@
 #include <vector>
 #include <string>
 #include <random>
+#include <algorithm>
 #include <stdlib.h>
+#include <utility>
 #include "./../splaytree/splay_functions.h"
 #include "./../splaytree/splay_tree.h"
 #include "./../linkcut/link_cut_functions.h"
@@ -83,6 +85,7 @@ bool compare(std::vector<int>& ans, SplayNode* root, std::string test_name) {
 			std::cout << "Traversal is wrong\n";
 			for (auto it : ans) std::cout << it << ' '; std::cout << '\n';
 			for (auto it : res) std::cout << it << ' '; std::cout << '\n';
+			SplayNode::print(root);
 		}
 	}
 	delete root;
@@ -320,13 +323,201 @@ bool testErase() {
 	return success;
 }
 
+bool testRandomSplayTreeOperations(int ini_nodes, int queries, int maxval, int seed, bool debug = false) {
+	std::vector<int> comp (ini_nodes);
+	SplayTree tree;
+	srand(seed);
+
+	for (int i = 0; i < ini_nodes; ++i) {
+		int val = rand() % maxval;
+		tree.insert(val);
+		comp[i] = val;
+	}
+	std::sort(comp.begin(), comp.end());
+
+	for (int j = 0; j < queries; ++j) {
+		int op = rand() % 10;
+		if (op == 0) {
+			if (debug) std::cout << "size()\n";
+			int tree_ans = tree.size();
+			int ans = comp.size();
+			if (tree_ans != ans) {
+				std::cout << "testRandomSplayTreeOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "size(): " << tree_ans << " vs " << ans << '\n';
+				if (comp.size() < 10) {
+					tree.print();
+					for (auto it : comp) std::cout << it << ' '; std::cout << '\n';
+				}
+				return false;
+			}
+		} else if (op == 1) {
+			if (comp.empty()) continue;
+			if (debug) std::cout << "getMax()\n";
+			int tree_ans = tree.getMax();
+			int ans = comp.back();
+
+			if (tree_ans != ans) {
+				std::cout << "testRandomSplayTreeOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "getMax(): " << tree_ans << " vs " << ans << '\n';
+				if (comp.size() < 10) {
+					tree.print();
+					for (auto it : comp) std::cout << it << ' '; std::cout << '\n';
+				}
+				return false;
+			}
+		} else if (op == 2) {
+			if (comp.empty()) continue;
+			if (debug) std::cout << "getMin()\n";
+			int tree_ans = tree.getMin();
+			int ans = comp[0];
+
+			if (tree_ans != ans) {
+				std::cout << "testRandomSplayTreeOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "getMin(): " << tree_ans << " vs " << ans << '\n';
+				if (comp.size() < 10) {
+					tree.print();
+					for (auto it : comp) std::cout << it << ' '; std::cout << '\n';
+				}
+				return false;
+			}
+		} else if (op == 3) {
+			if (comp.empty()) continue;
+			int k = rand() % comp.size();
+			if (debug) std::cout << "getKth(" << k << ")\n";
+			int tree_ans = tree.getKth(k);
+			int ans = comp[k];
+			if (tree_ans != ans) {
+				std::cout << "testRandomSplayTreeOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "getKth(" << k << "): " << tree_ans << " vs " << ans << '\n';
+				if (comp.size() < 10) {
+					tree.print();
+					for (auto it : comp) std::cout << it << ' '; std::cout << '\n';
+				}
+				return false;
+			}
+		} else if (op == 4) {
+			if (comp.empty()) continue;
+			int value = rand() % maxval;
+			if (debug) std::cout << "lowerBound(" << value << ")\n";
+			int tree_ans = tree.lowerBound(value);
+			int ans = comp[0];
+			for (int i = 0; i < comp.size(); ++i) {
+				if (comp[i] <= value) ans = comp[i];
+			}
+			if (tree_ans != ans) {
+				std::cout << "testRandomSplayTreeOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "lowerBound(" << value << "): " << tree_ans << " vs " << ans << '\n';
+				if (comp.size() < 10) {
+					tree.print();
+					for (auto it : comp) std::cout << it << ' '; std::cout << '\n';
+				}
+				return false;
+			}
+		} else if (op == 5) {
+			if (comp.empty()) continue;
+			int value = rand() % maxval;
+			if (debug) std::cout << "upperBound(" << value << ")\n";
+			int tree_ans = tree.upperBound(value);
+			int ans = comp.back();
+			for (int i = (int)comp.size() - 1; i >= 0; --i) {
+				if (comp[i] >= value) ans = comp[i];
+			}
+			if (tree_ans != ans) {
+				std::cout << "testRandomSplayTreeOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "upperBound(" << value << "): " << tree_ans << " vs " << ans << '\n';
+				if (comp.size() < 10) {
+					tree.print();
+					for (auto it : comp) std::cout << it << ' '; std::cout << '\n';
+				}
+				return false;
+			}
+		} else if (op == 6) {
+			int value = rand() % maxval;
+			if (debug) std::cout << "find(" << value << ")\n";
+			bool tree_ans = tree.find(value);
+			bool ans = 0;
+			for (auto it : comp) ans |= (it == value);
+			
+			if (tree_ans != ans) {
+				std::cout << "testRandomSplayTreeOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "find(" << value << "): " << (tree_ans ? "true" : "false") << " vs " << (ans ? "true" : "false") << '\n';
+				if (comp.size() < 10) {
+					tree.print();
+					for (auto it : comp) std::cout << it << ' '; std::cout << '\n';
+				}
+				return false;
+			}
+		} else if (op == 7) {
+			int value = rand() % maxval;
+			if (debug) std::cout << "getInd(" << value << ")\n";
+			int tree_ans = tree.getInd(value);
+			int ans = 0;
+			for (int i = 0; i < comp.size(); ++i) {
+				if (comp[i] < value) ++ans;
+			}
+			
+			if (tree_ans != ans) {
+				std::cout << "testRandomSplayTreeOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "getInd(" << value << "): " << tree_ans << " vs " << ans << '\n';
+				if (comp.size() < 10) {
+					tree.print();
+					for (auto it : comp) std::cout << it << ' '; std::cout << '\n';
+				}
+				return false;
+			}
+		} else if (op == 8) {
+			int value = rand() % maxval;
+			if (debug) std::cout << "insert(" << value << ")\n";
+			
+			comp.push_back(value);
+			sort(comp.begin(), comp.end());
+			
+			tree.insert(value);
+		} else if (op == 9) {
+			int value = rand() % maxval;
+			if (debug) std::cout << "erase(" << value << ")\n";
+			bool tree_ans = tree.erase(value);
+			bool ans = 0;
+			for (int i = 0; i < comp.size(); ++i) {
+				if (comp[i] == value) {
+					ans = true;
+					comp[i] = comp.back();
+					comp.pop_back();
+					break;
+				}
+			}
+			std::sort(comp.begin(), comp.end());
+			
+			if (tree_ans != ans) {
+				std::cout << "testRandomSplayTreeOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "erase(" << value << "): " << (tree_ans ? "true" : "false") << " vs " << (ans ? "true" : "false") << '\n';
+				if (comp.size() < 10) {
+					tree.print();
+					for (auto it : comp) std::cout << it << ' '; std::cout << '\n';
+				}
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 std::pair<int, int> testSplayTree() {
 	std::cout << "Testing Splay Tree\n";
 	int correct = 0;
-	int total = 2;
+	int total = 11;
 	
 	if (testInsert()) ++correct;
 	if (testErase()) ++correct;
+	if ((correct == 2) && (testRandomSplayTreeOperations(5, 10, 5, 0))) ++correct;
+	if ((correct == 3) && (testRandomSplayTreeOperations(5, 100, 10, 1))) ++correct;
+	if ((correct == 4) && (testRandomSplayTreeOperations(5, 1000, 10, 2))) ++correct;
+	if ((correct == 5) && (testRandomSplayTreeOperations(10, 10, 10, 3))) ++correct;
+	if ((correct == 6) && (testRandomSplayTreeOperations(100, 100, 10, 4))) ++correct;
+	if ((correct == 7) && (testRandomSplayTreeOperations(100, 100, 100, 5))) ++correct;
+	if ((correct == 8) && (testRandomSplayTreeOperations(1000, 2000, 100, 6))) ++correct;
+	if ((correct == 9) && (testRandomSplayTreeOperations(1000, 2000, 1000, 7))) ++correct;
+	if ((correct == 10) && (testRandomSplayTreeOperations(1000, 2000, 10000, 8))) ++correct;
 
 	std::cout << correct << "/" << total << " tests were successful\n";
 	return {correct, total};
@@ -445,7 +636,10 @@ std::pair<int, int> testLinkCutTree() {
 }
 
 int main() {
-	testSplayNode();
-	testSplayTree();
-	testLinkCutTree();
+	std::pair<int, int> a = testSplayNode();
+	std::pair<int, int> b = testSplayTree();
+	std::pair<int, int> c = testLinkCutTree();
+	int total = a.second + b.second + c.second;
+	int correct = a.first + b.first + c.first;
+	std::cout << correct << "/" << total << " of all tests were successful\n";
 }

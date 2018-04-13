@@ -113,7 +113,8 @@ int SplayTree::getKth(int k) {
 int SplayTree::lowerBound(int value) {
 	assert(root != nullptr);
 	SplayNode* x = root;
-	SplayNode* best = root;
+	SplayNode* best = nullptr;
+	if (root->val <= value) best = root;
 	while(true) {
 		if (x->val <= value) {
 			if (x->right == nullptr) break;
@@ -126,16 +127,21 @@ int SplayTree::lowerBound(int value) {
 		if (x->val <= value) best = x;
 	}
 	splay(x); // To keep correct complexity
-	splay(best); // To get it to the root
-	root = best;
-	return best->val;
+	if (best == nullptr) {
+		root = x;
+	} else {
+		splay(best); // To get it to the root
+		root = best;
+	}
+	return root->val;
 }
 // Splays leftmost node with val >= value, or maximum val if no value is >= value
 // Returns its value
 int SplayTree::upperBound(int value) {
 	assert(root != nullptr);
 	SplayNode* x = root;
-	SplayNode* best = root;
+	SplayNode* best = nullptr;
+	if (root->val >= value) best = root;
 	while(true) {
 		if (x->val < value) {
 			if (x->right == nullptr) break;
@@ -148,9 +154,13 @@ int SplayTree::upperBound(int value) {
 		if (x->val >= value) best = x;
 	}
 	splay(x); // To keep correct complexity
-	splay(best); // To get it to the root
-	root = best;
-	return best->val;
+	if (best == nullptr) {
+		root = x;
+	} else {
+		splay(best); // To get it to the root
+		root = best;
+	}
+	return root->val;
 }
 
 // Returns whether splay tree contains a node with the given value as key
@@ -163,9 +173,12 @@ bool SplayTree::find(int value) {
 // How many vals in the tree are smaller than value
 int SplayTree::getInd(int value) {
 	if (root == nullptr) return 0;
-	upperBound(value); // After this, root's left subtree contains all nodes with val < value
-	if (root->left == nullptr) return 0;
-	return root->left->size;
+	
+	upperBound(value); 
+	if (root->val < value) return root->size;
+	// After this, root's left subtree contains all nodes with val < value
+	
+	return SplayNode::getIndex(root);
 }
 
 // Inserts node with the given value as key
