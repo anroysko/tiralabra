@@ -7,6 +7,7 @@
 * [Viikko 3](https://github.com/anroysko/tiralabra/blob/master/doc/weekly_reports/week3.md)
 
 ## Komentorivitoiminnot
+Testikattavuusreportin generointiin tarvitaan ohjelma `lcov`
 ### Testaus
 Testit suoritetaan komennolla
 ```
@@ -15,10 +16,6 @@ make test
 Testikattavuusraportti luodaan komennolla
 ```
 make coverage
-```
-Kattavuusraportin generoinnissa käytetään lcov:ia. Sen voi asentaa komennolla
-```
-sudo apt install lcov
 ```
 Kattavuusraporttia voi tarkastella avaamalla selaimella tiedosto `src/bin/cov/html/index.html`
 ### Ohjelman ajaminen
