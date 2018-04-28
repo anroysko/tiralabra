@@ -15,13 +15,16 @@ int main() {
 		std::cin >> edge_source[i] >> edge_target[i] >> capacity[i];
 	}
 	FlowGraph graph (n, m, source, sink, edge_source, edge_target, flow, capacity);
-	std::cout << "mainprint\n>";
-	graph.edges.print();
+	
 	// Solve the flow problem with dinic
-	int res = dinic(&graph);
+	// Using dfs
+	// int res = dinic(&graph, true);
+	// Using link/cut trees
+	int res = dinic(&graph, false);
 
 	// Output solution
 	std::cout << res << "\n";
 	for (int i = 0; i < m; ++i) std::cout << graph.flow[i] << ' ';
 	std::cout << '\n';
+	
 }

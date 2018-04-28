@@ -22,7 +22,7 @@ struct FlowGraph {
 		this->source = source;
 		this->sink = sink;
 		this->edge_source = edge_source;
-		this->edge_target = edge_source;
+		this->edge_target = edge_target;
 		this->flow = flow;
 		this->capacity = capacity;
 
@@ -35,16 +35,16 @@ struct FlowGraph {
 		TwoDimArray<int> tmp (2*m, conns);
 		std::vector<int> inds (n, 0);
 		for (int i = 0; i < m; ++i) {
-			tmp[edge_source[i]][inds[edge_source[i]]] = i;
-			tmp[edge_target[i]][inds[edge_target[i]]] = i;
-			std::cout << "edge: " << edge_source[i] << ' ' << edge_target[i] << '\n';
-			++inds[edge_source[i]];
-			++inds[edge_target[i]];
+			int es = edge_source[i];
+			int et = edge_target[i];
+			tmp[es][inds[es]] = i;
+			tmp[et][inds[et]] = i;
+			++inds[es];
+			++inds[et];
 		}
 		edges = tmp;
 		tmp.data = nullptr;
 		tmp.offset = nullptr;
-		edges.print();
 	}
 };
 

@@ -20,21 +20,18 @@ struct TwoDimArray {
 		size = 0;
 	}
 	TwoDimArray(int total_size, const std::vector<int>& sizes) {
-		std::cout << "init twodimarray: " << total_size << "\n";
-		for (auto it : sizes) std::cout << it << ' '; std::cout << '\n';
 		this->total_size = total_size;
 		size = sizes.size();
 		data = new T[total_size];
 		offset = new int[size];
-		for (int i = 0, sum = 0; i < size; ++i, sum += sizes[i]) offset[i] = sum;
-		print();
+		for (int i = 0, sum = 0; i < size; sum += sizes[i], ++i) offset[i] = sum;
 	}
-	TwoDimArray(int total_size, int size, const int* sizes) {
+	TwoDimArray(int total_size, int size, const int* ref_offset) {
 		this->total_size = total_size;
 		this->size = size;
 		data = new T[total_size];
 		offset = new int[size];
-		for (int i = 0, sum = 0; i < size; ++i, sum += sizes[i]) offset[i] = sum;
+		for (int i = 0; i < size; ++i) offset[i] = ref_offset[i];
 	}
 	~TwoDimArray() {
 		if (data != nullptr) delete[] data;

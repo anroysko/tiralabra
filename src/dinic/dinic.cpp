@@ -54,7 +54,15 @@ namespace {
 		int dec_value;
 		int index;
 
-		DinicLinkCutNode(int val, int ind);
+		DinicLinkCutNode(int val, int ind) {
+			value = val;
+			index = ind;
+			min_value = val;
+			dec_value = 0;
+			left = nullptr;
+			right = nullptr;
+			parent = nullptr;
+		}
 		~DinicLinkCutNode() = default;
 
 		// inline so defined in header
@@ -101,6 +109,7 @@ namespace {
 
 		std::vector<int> dist(n, n);
 		std::vector<int> que;
+		std::vector<bool> handled(n, false);
 		que.reserve(n);
 		que.push_back(graph->sink);
 		dist[graph->sink] = 0;
@@ -108,17 +117,23 @@ namespace {
 			int ind = que[i];
 			for (int j = 0; j < graph->edges.getArraySize(ind); ++j) {
 				int edge = graph->edges[ind][j];
-				std::cout << "Handling edge " << edge << "\n";
 				int target = getOther(ind, edge);
 				if (getCapacity(target, edge) > 0) {
-					if (dist[target] >= dist[i] + 1) {
-						dist[target] = dist[i] + 1;
+					if (dist[target] >= dist[ind] + 1) {
+						if (dist[target] > dist[ind] + 1) {
+							que.push_back(target);
+							dist[target] = dist[ind] + 1;
+						}
+						// std::cout << "Add level graph edge from to edge " << target << ' ' << ind << ' ' << edge << '\n';
 						++level_graph->active_inds[target];
 						level_graph->edges[target][level_graph->active_inds[target]] = edge;
 					}
 				}
 			}
 		}
+
+		// for (int i = 0; i < n; ++i) std::cout << dist[i] << ' ' ; std::cout << '\n';
+
 		int res = dist[graph->source];
 		if (res == n) return -1;
 		else return res;
@@ -136,7 +151,13 @@ namespace {
 				continue;
 			}
 			int t = getOther(ind, edge);
+			// std::cout << graph->edge_source[edge] << ' ' << graph->edge_target[edge] << "\n";
 			int sub = dfsFlow(t, std::min(prev_min - res, cap));
+			// std::cout << ind << " " << "dfsFlow: " << edge << " " << cap << " " << t << " " << sub << "\n";
+			if (sub == 0) {
+				level_graph->nextEdge(ind);
+				continue;
+			}
 			res += sub;
 			pushFlow(ind, edge, sub);
 			if (sub == cap) level_graph->nextEdge(ind);
@@ -151,13 +172,13 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 	int n = graph->n;
 	int m = graph->m;
 	
-	LevelGraph lg (2*m, n, graph->edges.data);
-	level_graph = &lg;
-	
-	std::cout << "At least here: " << '\n';
-	graph->edges.print();
+	// std::cout << "Dinic on:\n";
+	// graph->edges.print();
+	// for (int i = 0; i < n; ++i) std::cout << graph->edges.offset[i] << ' '; std::cout << '\n';
 
-	/*
+	LevelGraph lg (2*m, n, graph->edges.offset);
+	level_graph = &lg;
+
 	// Reserve memory for link/cut tree
 	std::vector<DinicLinkCutNode*> link_cut_nodes (n);
 	for (int i = 0; i < n; ++i) link_cut_nodes[i] = new DinicLinkCutNode(0, i);
@@ -165,8 +186,7 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 	// Define for convenience
 	DinicLinkCutNode* source_node = link_cut_nodes[graph->source];
 	DinicLinkCutNode* sink_node = link_cut_nodes[graph->sink];
-	*/
-
+	sink_node->value = ((1<<30)-1) + (1<<30);
 
 	// Perform dinic
 	int ans = 0;
@@ -174,8 +194,9 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 		// Find level graph
 		int dist = buildLevelGraph();
 		if (dist == -1) break;
-		std::cout << "Level graph: " << dist << '\n';
-
+		// std::cout << "Level graph: " << dist << '\n';
+		// level_graph->edges.print();
+	
 		// Use dfs if specified to do so, otherwise use link/cut tree
 		if (use_dfs) {
 			// Saturate level graph
@@ -184,18 +205,20 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 			if (cap == 0) break;
 			ans += cap;
 		} else {
-			/*
 			// Init link/cut tree
 			for (int ind = 0; ind < n; ++ind) {
-				int edge = level_graph->activeEdge(i);
+				int edge = level_graph->getActiveEdge(ind);
 				DinicLinkCutNode* node = link_cut_nodes[ind];
 				if (edge != -1) {
+					// std::cout << "Add parent " << getOther(ind, edge) << " to " << ind << "\n";
 					node->value = getCapacity(ind, edge);
 					node->update();
-					linkChild(node, link_cut_nodes[getOther(node, edge)]);
+					linkChild(node, link_cut_nodes[getOther(ind, edge)]);
 				}
 			}
-
+			
+			// std::cout << "Here!\n";
+			
 			// Saturate level graph
 			while (true) {
 				// Find path to saturate
@@ -203,7 +226,7 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 				while (true) {
 					// Make sure that the path is not already saturated
 					access(source_node);
-					cap = source->getMinVal();
+					cap = source_node->getMinVal();
 					// If path doesn't lead to root, it ends in a node with value 0
 					// So this check is enough
 					if (cap > 0) break;
@@ -223,16 +246,17 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 							// Paths from this node to sink no longer exist
 							// Cut path leading to this node.
 							access(source_node);
-							node = nextNode(node);
+							node = findNext(node);
 							if (node == nullptr) {
 								// If node was root; no paths exist
 								break;
 							}
 							continue;
 						} else {
+							// std::cout << "Add parent " << getOther(ind, edge) << " to " << ind << "\n";
 							node->value = getCapacity(ind, edge);
 							node->update();
-							linkChild(node, link_cut_nodes[getOther(node, edge)]);
+							linkChild(node, link_cut_nodes[getOther(ind, edge)]);
 							break; // Active edge swapped, break
 						}
 					}
@@ -241,6 +265,7 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 				}
 				if (cap == 0) break; // When we can't push any more flow
 				// Push flow
+				// std::cout << "Push " << cap << "\n";
 				splay(source_node);
 				source_node->dec_value += cap;
 				ans += cap;
@@ -250,17 +275,15 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 			for (int ind = 0; ind < n; ++ind) {
 				DinicLinkCutNode* node = link_cut_nodes[ind];
 				access(node); // To make sure that every node gets pushed
-				push(node);
+				node->push();
 				cutParent(node);
 			}
-			*/
 		}
 	}
 
-	/*
 	// Clean up
 	for (int i = 0; i < n; ++i) delete link_cut_nodes[i];
-	*/
+	
 	graph = nullptr;
 	level_graph = nullptr;
 
