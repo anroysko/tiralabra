@@ -1,5 +1,5 @@
 link_flags :=
-compile_flags := -O2 -std=c++11
+compile_flags := -g -std=c++11
 cov_link_flags := $(link_flags) --coverage
 cov_compile_flags := --coverage -std=c++11
 
@@ -8,7 +8,7 @@ tester := testing/tester
 bin_path := bin/
 cov_bin_path := bin/cov/
 
-sources := $(main).cpp $(tester).cpp splaytree/splay_tree.cpp linkcut/link_cut_tree.cpp
+sources := $(main).cpp $(tester).cpp dinic/dinic.cpp splaytree/splay_tree.cpp linkcut/link_cut_tree.cpp
 objects := $(addprefix $(bin_path), $(sources:.cpp=.o))
 depends := $(addprefix $(bin_path), $(sources:.cpp=.d))
 cov_objects := $(addprefix $(cov_bin_path), $(sources:.cpp=.o))

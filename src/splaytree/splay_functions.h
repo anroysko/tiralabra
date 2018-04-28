@@ -8,18 +8,28 @@
 // For all functions, T needs to fulfill the following:
 // 1. Contains T* left, right, parent. They should be the pointers to related elements in the binary tree
 // 2. Has function update. It can update information such as subtree size, sum or maximum.
-// 3. Has function isRoot. This can be used so that the actual root's parent is path-parent, and the value is conveniently updated
+// 3. Has function push. Push pushes down operations to be applied to the whole subtree. With this, you can for example have a value "dec_value", that tells you how much must be decremented from all values in a subtree. 
+// 4. Has function isRoot. This can be used so that the actual root's parent is path-parent, and the value is conveniently updated
 // Example struct
 //	struct ExampleNode {
 //		ExampleNode* left;
 //		ExampleNode* right;
 //		ExampleNode* parent;
 //		int size; // subtree size
-//		int tree_index; // Value we only care for in the root
+//		int value; // value of this node
+//		int dec_value; // How much all values in this node's subtree must be decremented
 //		
+//
 //		inline bool isRoot() {
 //			return parent == nullptr;
 //		}
+//
+//		inline void push() {
+//			value -= dec_value;
+//			if (left != nullptr) left->dec_value += dec_value;
+//			if (right != nullptr) right->dec_value += dec_value;
+//			dec_value = 0;
+//		}		
 //
 //		inline void update() {
 //			size = 1;
@@ -62,6 +72,8 @@ void zig(T* x) {
 	assert(x->left != nullptr);
 
 	T* y = x->left;
+	x->push();
+	y->push();
 	
 	if (x->isRoot()) {
 		// no need to set p->child
@@ -112,6 +124,9 @@ void zag(T* x) {
 	assert(x->right != nullptr);
 
 	T* z = x->right;
+	x->push();
+	z->push();
+
 	if (x->isRoot()) {
 		// no need to set p->child
 		z->parent = x->parent;		// set z->parent
@@ -226,9 +241,12 @@ T* joinTrees(T* a, T* b) {
 	assert((a->isRoot()) && (a->parent == nullptr));
 	assert((b->isRoot()) && (b->parent == nullptr));
 	a = findLast(a);
+
+	a->push();
 	a->right = b; // Not overriding anything, since the rightmost node in A can't have a right child
 	b->parent = a;
 	a->update(); // Update a since it gained a child
+
 	return a;
 }
 
@@ -237,6 +255,8 @@ template<class T>
 std::pair<T*, T*> splitTree(T* split_point) {
 	assert(split_point != nullptr);
 	splay(split_point);
+	split_point->push();
+
 	T* a = split_point;
 	T* b = split_point->right;
 

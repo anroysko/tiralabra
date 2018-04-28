@@ -13,10 +13,15 @@ struct SplayNode {
 	
 	SplayNode(int v);
 	~SplayNode();
-	void update();
 	// Inline so defined in header
+	inline void update() {
+		size = 1 + (left == nullptr ? 0 : left->size) + (right == nullptr ? 0 : right->size);
+	}
 	inline bool isRoot() {
 		return parent == nullptr;
+	}
+	inline void push() {
+		// Do nothing
 	}
 	static int getIndex(SplayNode* x);
 	static SplayNode* findKth(SplayNode* root, int k);

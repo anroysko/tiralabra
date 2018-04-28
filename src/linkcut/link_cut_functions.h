@@ -7,21 +7,25 @@
 // Functions for link/cut nodes
 // Link/Cut nodes must have
 // 1. left child, right child, parent-pointers
-// 2. isRoot() method of the form in the example
+// 2. A update() function, possibly empty
+// 3. isRoot() method of the form in the example
+// 4. A push() function, possibly empty
 // In a Link/Cut tree the nodes are divided into chains of preferred childs
 // Example struct:
 //	struct ExampleNode {
 //		ExampleNode* left;
 //		ExampleNode* right;
 //		ExampleNode* parent;
-//		int min_val;
-//		int this_val;
+//		int min_value;
+//		int value;
 //		
 //		void update() {
-//			min_val = this_val;
-//			if (left != nullptr) min_val = std::min(min_val, left->min_val);
-//			if (right != nullptr) min_val = std::min(min_val, right->min_val);
+//			min_value = this_value;
+//			if (left != nullptr) min_value = std::min(min_value, left->min_value);
+//			if (right != nullptr) min_value = std::min(min_value, right->min_value);
 //		}
+//		void push() {/*do nothing*/}
+//
 //		// A chain's parent is the chain's path-parent
 //		// How to separate this from a usual parent-link? chain's root is not a child for path-parent.
 //		// isRoot() has to be this exact or equivalent function
@@ -40,8 +44,9 @@ void access(T* node) {
 
 	splay(x);
 	if (x->right != nullptr) {
+		x->push();
 		x->right = nullptr; // If node has a right child, cut it off
-		node->update();
+		x->update();
 	}
 	
 	while(true) {
@@ -53,6 +58,7 @@ void access(T* node) {
 		splay(next);
 
 		// Replace next's preferred child with node
+		next->push();
 		if (next->right != nullptr) next->right = nullptr;
 		next->right = x;
 		next->update();
@@ -80,9 +86,10 @@ void linkChild(T* child, T* node) {
 	assert(node != nullptr);
 	access(child);
 	access(node);
-	assert(child->parent == nullptr);
+	assert(child->parent == nullptr); // Child must not have a parent in the represented tree
 
 	// Link the nodes
+	node->push();
 	node->right = child;
 	child->parent = node;
 	node->update();
@@ -95,11 +102,32 @@ void cutParent(T* node) {
 	if (node->left == nullptr) {
 		// Nothing to cut
 	} else {
-		node->left->parent = node->parent;
+		node->push();
+		node->left->parent = nullptr;
 		node->left = nullptr;
 		node->parent = nullptr;
 		node->update();
 	}
 }
+
+// Requires additional properties
+template<class T>
+T* pathMinNode(T* x) {
+	assert(x != nullptr);
+	access(x);
+	while(true) {
+		x->push();
+		if (x->left != nullptr && x->left->getMinVal() == x->min_value) {
+			x = x->left;
+		} else if (x->value == x->min_value) {
+			break;
+		} else {
+			x = x->right;
+		}
+	}
+	splay(x);
+	return x;
+}
+
 
 #endif // __LINKCUT_LINK_CUT_FUNCTIONS_H_

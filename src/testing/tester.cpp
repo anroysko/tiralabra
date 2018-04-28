@@ -588,7 +588,7 @@ bool testRandomLinkCutOperations(int ini_nodes, int queries, int maxval, int see
 				return false;
 			}
 		} else if (t == 5) {
-			// pathMin
+			// pathMinVal
 			int ind = rand() % nodes;
 			int cur = ind;
 			int ans = value[cur];
@@ -596,10 +596,32 @@ bool testRandomLinkCutOperations(int ini_nodes, int queries, int maxval, int see
 				cur = parent[cur];
 				ans = std::min(ans, value[cur]);
 			}
-			int tree_ans = tree.pathMin(ind);
+			int tree_ans = tree.pathMinVal(ind);
 			if (tree_ans != ans) {
 				std::cout << "testRandomLinkCutOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
-				std::cout << "pathMin(" << ind << "): " << ans << " vs " << tree_ans << '\n';
+				std::cout << "pathMinVal(" << ind << "): " << ans << " vs " << tree_ans << '\n';
+				if (nodes < 10) {
+					std::cout << "Parents, values:\n";
+					for (int i = 0; i < nodes; ++i) std::cout << parent[i] << ' '; std::cout << '\n';
+					for (int i = 0; i < nodes; ++i) std::cout << value[i] << ' '; std::cout << '\n';
+					std::cout << "Link/Cut tree:\n";
+					tree.print();
+				}
+				return false;
+			}
+		} else if (t == 6) {
+			// pathMinVal
+			int ind = rand() % nodes;
+			int cur = ind;
+			int ans = cur;
+			while(parent[cur] != -1) {
+				cur = parent[cur];
+				if (value[cur] < value[ans]) ans = cur;
+			}
+			int tree_ans = tree.pathMinInd(ind);
+			if (tree_ans != ans) {
+				std::cout << "testRandomLinkCutOperations failed, with nodes=" << ini_nodes << ", queries=" << queries << ", maxval=" << maxval << ", seed=" << seed << "\n";
+				std::cout << "pathMinInd(" << ind << "): " << ans << " vs " << tree_ans << '\n';
 				if (nodes < 10) {
 					std::cout << "Parents, values:\n";
 					for (int i = 0; i < nodes; ++i) std::cout << parent[i] << ' '; std::cout << '\n';

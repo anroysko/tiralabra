@@ -1,24 +1,16 @@
 #include <iostream>	// std::cout
+#include <assert.h>	// assert
 #include "link_cut_functions.h"	// Link/Cut functions
 #include "link_cut_tree.h"
-
 
 LinkCutNode::LinkCutNode(int val, int ind) {
 	left = nullptr;
 	right = nullptr;
 	parent = nullptr;
 	value = val;
-	index = ind;
 	min_value = val;
-}
-
-inline void LinkCutNode::update() {
-	min_value = value;
-	if (left != nullptr) min_value = std::min(min_value, left->min_value);
-	if (right != nullptr) min_value = std::min(min_value, right->min_value);
-}
-inline bool LinkCutNode::isRoot() {
-	return (parent == nullptr) || (parent->left != this && parent->right != this);
+	dec_value = 0;
+	index = ind;
 }
 
 void LinkCutNode::print(LinkCutNode* node, int indent) {
@@ -28,7 +20,7 @@ void LinkCutNode::print(LinkCutNode* node, int indent) {
 	if (node == nullptr) {
 		std::cout << "*\n";
 	} else {
-		std::cout << "val: " << node->value << ", ind: " << node->index << ",  min_val: " << node->min_value << " parent ind: ";
+		std::cout << "ind: " << node->index << ", value: " << node->value << ",  min_value: " << node->min_value << ", dec_value: " << node->dec_value << ", parent ind: ";
 		if (node->parent == nullptr) {
 			std::cout << "none\n";
 		} else {
@@ -53,6 +45,7 @@ LinkCutTree::~LinkCutTree() {
 	nodes.resize(0);
 	nodes.shrink_to_fit();
 }
+
 void LinkCutTree::insert(int val) {
 	nodes.push_back(new LinkCutNode(val, nodes.size()));
 }
@@ -81,10 +74,25 @@ int LinkCutTree::findRoot(int i) {
 	return root->index;
 }
 
-int LinkCutTree::pathMin(int i) {
+int LinkCutTree::pathMinVal(int i) {
 	assert(0 <= i && i < nodes.size());
 	access(nodes[i]);
-	return nodes[i]->min_value;
+	return nodes[i]->getMinVal();
+}
+int LinkCutTree::pathChild(int i) {
+	assert(0 <= i && i < nodes.size());
+	LinkCutNode* x = nodes[i];
+	x = findNext(x);
+	if (x == nullptr) return -1;
+	return x->index;
+}
+
+int LinkCutTree::pathMinInd(int i) {
+	assert(0 <= i && i < nodes.size());
+	LinkCutNode* x = nodes[i];
+	access(x);
+	x = pathMinNode(x);
+	return x->index;
 }
 
 void LinkCutTree::print() {
@@ -94,7 +102,3 @@ void LinkCutTree::print() {
 		}
 	}
 }
-
-
-
-

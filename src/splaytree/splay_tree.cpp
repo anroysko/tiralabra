@@ -18,12 +18,6 @@ SplayNode::~SplayNode() {
 	if (right != nullptr) delete right;
 }
 
-void SplayNode::update() {
-	size = 1;
-	if (left != nullptr) size += left->size;
-	if (right != nullptr) size += right->size;
-}
-
 // Returns x's index, e.g. how many smaller elements than x exist in the tree
 int SplayNode::getIndex(SplayNode* x) {
         assert(x != nullptr);
