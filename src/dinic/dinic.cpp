@@ -3,6 +3,42 @@
 #include "./../linkcut/link_cut_functions.h"
 #include "dinic.h"
 
+// Definitions of flowgraph's constructors
+FlowGraph::FlowGraph(const FlowGraph& oth) :
+	n(oth.n), m(oth.m), source(oth.source), sink(oth.sink),
+	edge_source(oth.edge_source), edge_target(oth.edge_target),
+	flow(oth.flow), capacity(oth.capacity), edges(oth.edges) {
+}
+FlowGraph::FlowGraph(int n, int m, int source, int sink, std::vector<int>&& edge_source, std::vector<int>&& edge_target, std::vector<int>&& flow, std::vector<int>&& capacity) {
+	this->n = n;
+	this->m = m;
+	this->source = source;
+	this->sink = sink;
+	this->edge_source = edge_source;
+	this->edge_target = edge_target;
+	this->flow = flow;
+	this->capacity = capacity;
+
+	// Init edge array
+	std::vector<int> conns (n, 0);
+	for (int i = 0; i < m; ++i) {
+		++conns[edge_source[i]];
+		++conns[edge_target[i]];
+	}
+	TwoDimArray<int> tmp (2*m, conns);
+	std::vector<int> inds (n, 0);
+	for (int i = 0; i < m; ++i) {
+		int es = edge_source[i];
+		int et = edge_target[i];
+		tmp[es][inds[es]] = i;
+		tmp[et][inds[et]] = i;
+		++inds[es];
+		++inds[et];
+	}
+	edges = tmp;
+	tmp.data = nullptr;
+	tmp.offset = nullptr;
+}
 
 // Empty namespace to hide these functions and structs
 namespace {

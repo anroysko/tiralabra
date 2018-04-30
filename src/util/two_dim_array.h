@@ -19,6 +19,12 @@ struct TwoDimArray {
 		total_size = 0;
 		size = 0;
 	}
+	TwoDimArray(const TwoDimArray& oth) : size(oth.size), total_size(oth.total_size) {
+		offset = new int[size];
+		data = new T[total_size];
+		for (int i = 0; i < size; ++i) offset[i] = oth.offset[i];
+		for (int i = 0; i < total_size; ++i) data[i] = oth.data[i];
+	}
 	TwoDimArray(int total_size, const std::vector<int>& sizes) {
 		this->total_size = total_size;
 		size = sizes.size();

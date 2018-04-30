@@ -1,14 +1,14 @@
 link_flags :=
-compile_flags := -g -std=c++11
+compile_flags := -O3 -march=native -std=c++11
 cov_link_flags := $(link_flags) --coverage
-cov_compile_flags := --coverage -std=c++11
+cov_compile_flags := -g --coverage -std=c++11
 
 main := main
 tester := testing/tester
 bin_path := bin/
 cov_bin_path := bin/cov/
 
-sources := $(main).cpp $(tester).cpp dinic/dinic.cpp splaytree/splay_tree.cpp linkcut/link_cut_tree.cpp
+sources := $(main).cpp $(tester).cpp dinic/dinic.cpp splaytree/splay_tree.cpp linkcut/link_cut_tree.cpp testing/test_util.cpp testing/tests/dinic_tests.cpp testing/tests/linkcut_tests.cpp testing/tests/splay_tests.cpp
 objects := $(addprefix $(bin_path), $(sources:.cpp=.o))
 depends := $(addprefix $(bin_path), $(sources:.cpp=.d))
 cov_objects := $(addprefix $(cov_bin_path), $(sources:.cpp=.o))
@@ -40,6 +40,10 @@ $(cov_bin_path)%.o : %.cpp
 .PHONY : test
 test : $(bin_path)$(tester)
 	@./$(bin_path)$(tester)
+
+.PHONY : performance
+performance : $(bin_path)$(tester)
+	@./$(bin_path)$(tester) performance
 
 .PHONY : run
 run : $(bin_path)$(main)

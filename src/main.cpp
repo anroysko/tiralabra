@@ -14,17 +14,22 @@ int main() {
 	for (int i = 0; i < m; ++i) {
 		std::cin >> edge_source[i] >> edge_target[i] >> capacity[i];
 	}
-	FlowGraph graph (n, m, source, sink, edge_source, edge_target, flow, capacity);
+	FlowGraph graph (n, m, source, sink, std::move(edge_source), std::move(edge_target), std::move(flow), std::move(capacity));
+	FlowGraph copy (graph);
 	
 	// Solve the flow problem with dinic
 	// Using dfs
-	// int res = dinic(&graph, true);
+	int dfs_res = dinic(&graph, true);
 	// Using link/cut trees
-	int res = dinic(&graph, false);
+	int linkcut_res = dinic(&copy, false);
 
-	// Output solution
-	std::cout << res << "\n";
+	// Output solutions
+	std::cout << dfs_res << "\n";
 	for (int i = 0; i < m; ++i) std::cout << graph.flow[i] << ' ';
+	std::cout << '\n';
+
+	std::cout << linkcut_res << "\n";
+	for (int i = 0; i < m; ++i) std::cout << copy.flow[i] << ' ';
 	std::cout << '\n';
 	
 }
