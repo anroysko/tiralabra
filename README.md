@@ -1,6 +1,6 @@
 # Tiralabra-projekti: Dinic ja Link/Cut tree
 
-Projektissa on toteutettu Dinic'n algoritmi maximum flow -ongelman ratkaisemiseen aikavaativuudella O(VE log V). Tätä varten on toteutettu link/cut tree ja splay tree -tietorakenteet.
+Projektissa on toteutettu Dinic'n algoritmi maximum flow -ongelman ratkaisemiseen aikavaativuudella `O(VE log V)`. Tätä varten on toteutettu link/cut tree ja splay tree -tietorakenteet.
 
 ## dokumentaatio
 [Määrittelydokumentti](https://github.com/anroysko/tiralabra/blob/master/doc/maarittely.md)
