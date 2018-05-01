@@ -1,4 +1,5 @@
 #include <vector>
+#include <assert.h>
 #include "./../util/two_dim_array.h"
 #include "./../linkcut/link_cut_functions.h"
 #include "dinic.h"
@@ -60,7 +61,7 @@ namespace {
 		// Returns -1 if no next edge exists
 		inline int nextEdge(int index) {
 			--active_inds[index];
-			if (active_inds[index] == -1) return -1;
+			if (active_inds[index] <= -1) return -1;
 			else return getActiveEdge(index);
 		}
 	};
@@ -115,16 +116,17 @@ namespace {
 
 		inline void push() {
 			if (dec_value > 0) {
-				value -= dec_value;
-				min_value -= dec_value;
-				// Push flow from this node's active edge, assuming it is not the sink
-				if (index != graph->sink) {
-					pushFlow(index, level_graph->getActiveEdge(index), dec_value);
-				}
-
 				// Push value to childs
 				if (left != nullptr) left->dec_value += dec_value;
 				if (right != nullptr) right->dec_value += dec_value;
+				// Push flow from this node's active edge, assuming it is not the sink
+				if (index != graph->sink) {
+					min_value -= dec_value;
+					value -= dec_value;
+					pushFlow(index, level_graph->getActiveEdge(index), dec_value);
+				} else {
+					update();
+				}
 				dec_value = 0;
 			}
 		}
@@ -145,7 +147,6 @@ namespace {
 
 		std::vector<int> dist(n, n);
 		std::vector<int> que;
-		std::vector<bool> handled(n, false);
 		que.reserve(n);
 		que.push_back(graph->sink);
 		dist[graph->sink] = 0;
@@ -175,9 +176,10 @@ namespace {
 		else return res;
 	}
 
-	int dfsFlow(int ind, int prev_min) {
+	// prev_min is larger than any value a int can get
+	long long dfsFlow(int ind, long long prev_min = 1ll<<60ll) {
 		if (ind == graph->sink) return prev_min;
-		int res = 0;
+		long long res = 0;
 		while(res < prev_min) {
 			int edge = level_graph->getActiveEdge(ind);
 			if (edge == -1) break;
@@ -188,7 +190,7 @@ namespace {
 			}
 			int t = getOther(ind, edge);
 			// std::cout << graph->edge_source[edge] << ' ' << graph->edge_target[edge] << "\n";
-			int sub = dfsFlow(t, std::min(prev_min - res, cap));
+			long long sub = dfsFlow(t, std::min(prev_min - res, (long long)cap));
 			// std::cout << ind << " " << "dfsFlow: " << edge << " " << cap << " " << t << " " << sub << "\n";
 			if (sub == 0) {
 				level_graph->nextEdge(ind);
@@ -202,7 +204,42 @@ namespace {
 	}
 }	// Empty namespace
 
-int dinic(FlowGraph* flow_graph, bool use_dfs) {
+long long basicDinic(FlowGraph* flow_graph) {
+	// Init graph and level_graph
+	graph = flow_graph;
+	int n = graph->n;
+	int m = graph->m;
+	
+	// std::cout << "Dinic on:\n";
+	// graph->edges.print();
+	// for (int i = 0; i < n; ++i) std::cout << graph->edges.offset[i] << ' '; std::cout << '\n';
+
+	LevelGraph lg (2*m, n, graph->edges.offset);
+	level_graph = &lg;
+
+	// how much flow we pushed at the end
+	long long ans = 0;
+	// Perform dinic
+	while(true) {
+		// Find level graph
+		int dist = buildLevelGraph();
+		if (dist == -1) break;
+		// std::cout << "Level graph: " << dist << '\n';
+		// level_graph->edges.print();
+	
+		// Saturate level graph
+		long long cap = dfsFlow(graph->source);
+		if (cap == 0) break;
+		ans += cap;
+	}
+
+	graph = nullptr;
+	level_graph = nullptr;
+
+	// Return result
+	return ans;
+}
+long long dinic(FlowGraph* flow_graph, int swap_const = 100) {
 	// Init graph and level_graph
 	graph = flow_graph;
 	int n = graph->n;
@@ -222,22 +259,20 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 	// Define for convenience
 	DinicLinkCutNode* source_node = link_cut_nodes[graph->source];
 	DinicLinkCutNode* sink_node = link_cut_nodes[graph->sink];
-	sink_node->value = ((1<<30)-1) + (1<<30);
+	sink_node->value = ((1<<30)-1) + (1<<30); // Max edge weight
 
+	// how much flow we pushed at the end
+	long long ans = 0;
 	// Perform dinic
-	int ans = 0;
 	while(true) {
 		// Find level graph
 		int dist = buildLevelGraph();
 		if (dist == -1) break;
 		// std::cout << "Level graph: " << dist << '\n';
 		// level_graph->edges.print();
-	
-		// Use dfs if specified to do so, otherwise use link/cut tree
-		if (use_dfs) {
+		if (dist < swap_const) {
 			// Saturate level graph
-			const int inf = ((1<<30)-1) + (1<<30); // Max value of a int
-			int cap = dfsFlow(graph->source, inf);
+			long long cap = dfsFlow(graph->source);
 			if (cap == 0) break;
 			ans += cap;
 		} else {
@@ -252,8 +287,6 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 					linkChild(node, link_cut_nodes[getOther(ind, edge)]);
 				}
 			}
-			
-			// std::cout << "Here!\n";
 			
 			// Saturate level graph
 			while (true) {
@@ -289,9 +322,10 @@ int dinic(FlowGraph* flow_graph, bool use_dfs) {
 							}
 							continue;
 						} else {
-							// std::cout << "Add parent " << getOther(ind, edge) << " to " << ind << "\n";
 							node->value = getCapacity(ind, edge);
 							node->update();
+							assert(subtreeRoot(node) == node);
+							assert(node != subtreeRoot(link_cut_nodes[getOther(ind, edge)]));
 							linkChild(node, link_cut_nodes[getOther(ind, edge)]);
 							break; // Active edge swapped, break
 						}

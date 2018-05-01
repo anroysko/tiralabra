@@ -2,6 +2,7 @@ link_flags :=
 compile_flags := -O3 -march=native -std=c++11
 cov_link_flags := $(link_flags) --coverage
 cov_compile_flags := -g --coverage -std=c++11
+CC := g++
 
 main := main
 tester := testing/tester
@@ -16,26 +17,26 @@ cov_depends := $(addprefix $(cov_bin_path), $(sources:.cpp=.d))
 
 $(bin_path)$(main) : $(filter-out $(bin_path)$(tester).o, $(objects))
 	@mkdir -p $(dir $@)
-	g++ $(compile_flags) $^ -o $@ $(link_flags)
+	$(CC) $(compile_flags) $^ -o $@ $(link_flags)
 
 $(bin_path)$(tester) : $(filter-out $(bin_path)$(main).o, $(objects))
 	@mkdir -p $(dir $@)
-	g++ $(compile_flags) $^ -o $@ $(link_flags)
+	$(CC) $(compile_flags) $^ -o $@ $(link_flags)
 
 $(cov_bin_path)$(tester) : $(filter-out $(cov_bin_path)$(main).o, $(cov_objects))
 	@mkdir -p $(dir $@)
-	g++ $(cov_compile_flags) $^ -o $@ $(cov_link_flags)
+	$(CC) $(cov_compile_flags) $^ -o $@ $(cov_link_flags)
 
 -include $(depends)
 -include $(cov_depends)
 
 $(bin_path)%.o : %.cpp
 	@mkdir -p $(dir $@)
-	g++ $(compile_flags) -c -MMD $< -o $@
+	$(CC) $(compile_flags) -c -MMD $< -o $@
 
 $(cov_bin_path)%.o : %.cpp
 	@mkdir -p $(dir $@)
-	g++ $(cov_compile_flags) -c -MMD $< -o $@
+	$(CC) $(cov_compile_flags) -c -MMD $< -o $@
 
 .PHONY : test
 test : $(bin_path)$(tester)

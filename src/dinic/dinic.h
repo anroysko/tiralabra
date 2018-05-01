@@ -21,10 +21,15 @@ struct FlowGraph {
 	FlowGraph(const FlowGraph& graph);
 };
 
+// Dinic's algorithm with link/cut trees
+// IN: flowgraph to do dinic on, levelgraph dist to use link/cut trees
+// OUT: int, giving how much flow was pushed. the flow graph is modified to signify the pushed flow
+// Complexity: O(EV log V) if swap_const is small enough
+long long dinic(FlowGraph* graph, int swap_const);
 // Dinic's algorithm
 // IN: flowgraph to do dinic on
 // OUT: int, giving how much flow was pushed. the flow graph is modified to signify the pushed flow
-// Complexity: O(E log V)
-int dinic(FlowGraph* graph, bool use_dfs);
+// Complexity: O(EV^2)
+long long basicDinic(FlowGraph* graph);
 
 #endif // __DINIC_DINIC_H_

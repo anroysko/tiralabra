@@ -231,7 +231,7 @@ TestGroup getLinkCutTests() {
 	std::vector<Test> res;
 	res.push_back(makeTest(testRandomLinkCutOperationsMedium, "testRandomLinkCutOperationsMedium"));
 	res.push_back(makeTest(testRandomLinkCutOperationsLarge, "testRandomLinkCutOperationsLarge"));
-	return makeTestGroup(res, "test link/cut tree", true);
+	return makeTestGroup(res, "link/cut tree tests", true);
 }
 TestGroup getLinkCutTimeTests() {
 	std::vector<Test> res;
@@ -241,5 +241,5 @@ TestGroup getLinkCutTimeTests() {
 	res.push_back(makeTest(timeRandomLinkCutOperationsDeepLarge, "timeRandomLinkCutOperationsDeepLarge", true));
 	res.push_back(makeTest(timeLinkCutOperationsWideMedium, "timeLinkCutOperationsWideMedium", true));
 	res.push_back(makeTest(timeLinkCutOperationsWideLarge, "timeLinkCutOperationsWideLarge", true));
-	return makeTestGroup(res, "performance test link/cut tree", true);
+	return makeTestGroup(res, "link/cut tree performance tests", true);
 }

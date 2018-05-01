@@ -1,0 +1,225 @@
+#include <random> // random()
+#include <stdlib.h> // srand(int)
+#include <vector> // std::vector
+#include <utility> // std::move
+#include <iostream> // TODO: remove
+
+#include "./../../dinic/dinic.h"
+#include "dinic_tests.h"
+
+// Test if flow is valid
+bool checkFlowGraph(const FlowGraph& graph, long long ans) {
+	std::vector<long long> diff(graph.n, 0);
+	for (int j = 0; j < graph.m; ++j) {
+		int a = graph.edge_source[j];
+		int b = graph.edge_target[j];
+		diff[a] -= graph.flow[j];
+		diff[b] += graph.flow[j];
+	}
+	for (int j = 0; j < graph.n; ++j) {
+		if (j == graph.source) {
+			if (diff[j] != -ans) return false;
+		} else if (j == graph.sink) {
+			if (diff[j] != ans) return false;
+		} else {
+			if (diff[j] != 0) return false;
+		}
+	}
+	return true;
+}
+// Test if more flow can be pushed
+bool tryDfsFlow(const FlowGraph& graph) {
+	std::vector<int> visited (graph.n, false);
+	std::vector<int> que;
+	que.reserve(graph.n);
+	visited[graph.source] = true;
+	que.push_back(graph.source);
+	for (int j = 0; j < que.size(); ++j) {
+		int i = que[j];
+		if (i == graph.sink) return false;
+		for (int s = 0; s < graph.edges.getArraySize(i); ++s) {
+			int edge = graph.edges[i][s];
+			if (graph.edge_source[edge] == i) {
+				if (graph.capacity[edge] > graph.flow[edge]) {
+					int t = graph.edge_target[edge];
+					if (! visited[t]) {
+						visited[t] = true;
+						que.push_back(t);
+					}
+				}
+			} else {
+				if (graph.flow[edge] > 0) {
+					int t = graph.edge_source[edge];
+					if (! visited[t]) {
+						visited[t] = true;
+						que.push_back(t);
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
+// Edges must be at least 2 * nodes
+bool testRandomDinicGraph(int nodes, int edges, int maxcap, int seed, int cutoff) {
+	if (edges < 2 * nodes) return false;
+	srand(seed);
+	int m = 0;
+	std::vector<int> edge_target (edges);
+	std::vector<int> edge_source (edges);
+	std::vector<int> capacity (edges);
+	std::vector<int> flow(edges, 0);
+	std::vector<int> out_count(nodes);
+	std::vector<int> in_count(nodes);
+	int source = 0;
+	int sink = nodes - 1;
+	// Make sure each node has at least one 
+	for (int i = 0; i < nodes; ++i) {
+		if ((in_count[i] == 0) && (i > 0)) {
+			int rand_prev = rand() % i;
+			edge_target[m] = i;
+			edge_source[m] = rand_prev;
+			capacity[m] = 1 + (rand() % maxcap);
+			++m;
+			++out_count[rand_prev];
+			++in_count[i];
+		}
+		if ((out_count[i] == 0) && (i < nodes-1)) {
+			int rand_next = (i+1) + (rand() % (nodes-1-i));
+			edge_target[m] = rand_next;
+			edge_source[m] = i;
+			capacity[m] = 1 + (rand() % maxcap);
+			++m;
+			++out_count[i];
+			++in_count[rand_next];
+		}
+	}
+	for (; m < edges; ++m) {
+		int a = rand() % nodes;
+		int b = rand() % (nodes-1);
+		if (b >= a) ++b;
+		edge_target[m] = a;
+		edge_source[m] = b;
+		capacity[m] = 1 + (rand() % maxcap);
+	}
+
+	FlowGraph graph (nodes, edges, source, sink, std::move(edge_source), std::move(edge_target), std::move(flow), std::move(capacity));
+	long long res;
+	if (cutoff = -1) {
+		res = basicDinic(&graph);
+	} else {
+		res = dinic(&graph, cutoff);
+	}
+	if (!checkFlowGraph(graph, res)) return false;
+	if (!tryDfsFlow(graph)) return false;
+	return true;
+}
+
+// Edges must be at least 2 * nodes
+bool timeRandomDinicGraph(int nodes, int edges, int maxcap, int seed, int cutoff) {
+	if (edges < 2 * nodes) return false;
+	srand(seed);
+	int m = 0;
+	std::vector<int> edge_target (edges);
+	std::vector<int> edge_source (edges);
+	std::vector<int> capacity (edges);
+	std::vector<int> flow(edges, 0);
+	std::vector<int> out_count(nodes);
+	std::vector<int> in_count(nodes);
+	int source = 0;
+	int sink = nodes - 1;
+	// Make sure each node has at least one 
+	for (int i = 0; i < nodes; ++i) {
+		if ((in_count[i] == 0) && (i > 0)) {
+			int rand_prev = rand() % i;
+			edge_target[m] = i;
+			edge_source[m] = rand_prev;
+			capacity[m] = 1 + (rand() % maxcap);
+			++m;
+			++out_count[i];
+			++in_count[rand_prev];
+		}
+		if ((out_count[i] == 0) && (i < nodes-1)) {
+			int rand_next = (i+1) + (rand() % (nodes-1-i));
+			edge_target[m] = rand_next;
+			edge_source[m] = i;
+			capacity[m] = 1 + (rand() % maxcap);
+			++m;
+			++out_count[i];
+			++in_count[rand_next];
+		}
+	}
+	for (; m < edges; ++m) {
+		int a = rand() % nodes;
+		int b = rand() % (nodes-1);
+		if (b >= a) ++b;
+		edge_target[m] = a;
+		edge_source[m] = b;
+		capacity[m] = 1 + (rand() % maxcap);
+	}
+
+	FlowGraph graph (nodes, edges, source, sink, std::move(edge_source), std::move(edge_target), std::move(flow), std::move(capacity));
+	int res;
+	if (cutoff == -1) {
+		res = basicDinic(&graph);
+	} else {
+		res = dinic(&graph, cutoff);
+	}
+	volatile int pls = res;
+	return true;
+}
+
+bool testRandomDinicSmall() {
+	return testRandomDinicGraph(10, 25, 1000000000, 0, -1);
+}
+bool testRandomDinicMedium() {
+	return testRandomDinicGraph(10000, 50000, 1000000000, 0, -1);
+}
+bool testRandomLinkCutDinicSmall() {
+	return testRandomDinicGraph(10, 25, 1000000000, 0, 0);
+}
+bool testRandomLinkCutDinicMedium() {
+	return testRandomDinicGraph(10000, 50000, 1000000000, 0, 0);
+}
+bool testRandomMixedDinicMedium() {
+	return testRandomDinicGraph(10000, 50000, 1000000000, 0, 100);
+}
+bool timeRandomDinicMedium() {
+	return timeRandomDinicGraph(10000, 50000, 1000000000, 0, -1);
+}
+bool timeRandomDinicLarge() {
+	return timeRandomDinicGraph(1000000, 5000000, 1000000000, 0, -1);
+}
+bool timeRandomLinkCutDinicMedium() {
+	return timeRandomDinicGraph(10000, 50000, 1000000000, 0, 0);
+}
+bool timeRandomLinkCutDinicLarge() {
+	return timeRandomDinicGraph(1000000, 5000000, 1000000000, 0, 0);
+}
+bool timeRandomMixedDinicMedium() {
+	return timeRandomDinicGraph(10000, 50000, 1000000000, 0, 100);
+}
+bool timeRandomMixedDinicLarge() {
+	return timeRandomDinicGraph(1000000, 5000000, 1000000000, 0, 1000);
+}
+TestGroup getDinicTests() {
+	std::vector<Test> tests;
+	tests.push_back(makeTest(testRandomDinicSmall, "testRandomDinicSmall()", false));
+	tests.push_back(makeTest(testRandomDinicMedium, "testRandomDinicMedium()", false));
+	tests.push_back(makeTest(testRandomLinkCutDinicSmall, "testRandomLinkCutDinicSmall()", false));
+	tests.push_back(makeTest(testRandomLinkCutDinicMedium, "testRandomLinkCutDinicMedium()", false));
+	tests.push_back(makeTest(testRandomMixedDinicMedium, "testRandomMixedDinicMedium()", false));
+	return makeTestGroup(tests, "dinic tests", true);
+}
+TestGroup getDinicTimeTests() {
+	std::vector<Test> tests;
+	tests.push_back(makeTest(timeRandomDinicMedium, "timeRandomDinicMedium()", true));
+	tests.push_back(makeTest(timeRandomDinicLarge, "timeRandomDinicLarge()", true));
+	tests.push_back(makeTest(timeRandomLinkCutDinicMedium, "timeRandomLinkCutDinicMedium()", true));
+	tests.push_back(makeTest(timeRandomLinkCutDinicLarge, "timeRandomLinkCutDinicLarge()", true));
+	tests.push_back(makeTest(timeRandomMixedDinicMedium, "timeRandomMixedDinicMedium()", true));
+	tests.push_back(makeTest(timeRandomMixedDinicLarge, "timeRandomMixedDinicLarge()", true));
+	return makeTestGroup(tests, "dinic performance tests", true);
+}
+

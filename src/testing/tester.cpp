@@ -1,12 +1,20 @@
 #include <vector>
 #include <utility>
+#include <signal.h> // for debugging
 
 #include "tests/splay_tests.h"
 #include "tests/linkcut_tests.h"
 #include "tests/dinic_tests.h"
 #include "test_util.h"
 
+void signalHandler(int sig) {
+	std::cout << sig << '\n';
+	exit(1);
+}
+
 int main(int argc, char* argv[]) {
+	signal(SIGABRT, &signalHandler);
+
 	std::vector<TestGroup> test_groups;
 	if (argc == 1) {
 		TestGroup splay_tests = getSplayTests();

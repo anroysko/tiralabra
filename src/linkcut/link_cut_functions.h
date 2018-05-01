@@ -84,6 +84,7 @@ template<class T>
 void linkChild(T* child, T* node) {
 	assert(child != nullptr);
 	assert(node != nullptr);
+	assert(subtreeRoot(node) != child);
 	access(child);
 	access(node);
 	assert(child->parent == nullptr); // Child must not have a parent in the represented tree

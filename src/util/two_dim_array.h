@@ -48,6 +48,9 @@ struct TwoDimArray {
 	inline T* operator[] (int x) {
 		return &data[offset[x]];
 	}
+	inline const T* operator[] (int x) const {
+		return &data[offset[x]];
+	}
 	inline int getSize() const {
 		return size;
 	}
