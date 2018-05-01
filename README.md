@@ -14,6 +14,10 @@ Testit suoritetaan komennolla
 ```
 make test
 ```
+Performanssitestit suoritetaan komennolla
+```
+make performance
+```
 Testikattavuusraportti luodaan komennolla
 ```
 make coverage

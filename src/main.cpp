@@ -4,6 +4,10 @@
 #include "dinic/dinic.h"
 
 int main() {
+	// Optimize I/O
+	std::ios_base::sync_with_stdio(false);
+	std::cin.tie(0);
+
 	// Construct flow graph from input
 	int n, m, source, sink; // Nodes, edges
 	std::cin >> n >> m >> source >> sink;
@@ -18,18 +22,10 @@ int main() {
 	FlowGraph copy (graph);
 	
 	// Solve the flow problem with dinic
-	// Using dfs
-	int dfs_res = dinic(&graph, true);
-	// Using link/cut trees
-	int linkcut_res = dinic(&copy, false);
+	int res = dinic(&graph, 100);
 
-	// Output solutions
-	std::cout << dfs_res << "\n";
+	// Output solution
+	std::cout << res << "\n";
 	for (int i = 0; i < m; ++i) std::cout << graph.flow[i] << ' ';
 	std::cout << '\n';
-
-	std::cout << linkcut_res << "\n";
-	for (int i = 0; i < m; ++i) std::cout << copy.flow[i] << ' ';
-	std::cout << '\n';
-	
 }
