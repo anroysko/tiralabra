@@ -1,4 +1,4 @@
-#Toteutusdokumentti
+# Toteutusdokumentti
 
 Ohjelma koostuu kolmesta osasta:
 
@@ -17,7 +17,9 @@ Käytännössä Dinic toimii lähes lineaarisessa ajassa. Link/Cut treetä on hi
 
 Työhön ei nykyisellään ole oikein mitään lisättävää. Sen vakiokertoimia pystyisi kyllä varmasti vielä viilaamaan.
 
-Lähteet:
+## Lähteet:
 [Dinic](https://en.wikipedia.org/wiki/Maximum_flow_problem#Solutions)
+
 [Link/Cut tree](https://en.wikipedia.org/wiki/Link/cut_tree)
+
 [Splay tree](https://en.wikipedia.org/wiki/Splay_tree)
