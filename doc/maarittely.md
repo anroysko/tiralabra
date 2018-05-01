@@ -17,3 +17,5 @@ Algoritmin aikavaatimus on O(VE log(V)), missä V on vertexien määrä ja E Edg
 [Maximum flow problem](https://en.wikipedia.org/wiki/Maximum_flow_problem)
 
 Bonus: Kuva yhden Link/Cut treen kehittäjistä, Daniel Sleatorin kanssa, kiinan muurilla:
+
+![gratwallsleator.jpg](https://github.com/anroysko/tiralabra/blob/master/doc/greatwallsleator.jpg)
