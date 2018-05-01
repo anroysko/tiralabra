@@ -170,6 +170,192 @@ bool timeRandomDinicGraph(int nodes, int edges, int maxcap, int seed, int cutoff
 	return true;
 }
 
+// Construction to make dinic reach its max complexity:
+//         .. - so - ..
+// bb                       bb
+// |                        |
+// ..                       ..
+// |                        |
+// b2        l1 - r1        b2
+// |       /    x    \      |
+// b1 - al - .. - .. - ar - b1
+//      |  \    x    / |
+//      ..   la - ra   ..
+// 
+//      bb - .. - b2 - b1
+//                     |
+//      si - cc - .. - c1
+
+// Different node groups:
+// so = source
+// si = sink
+// a-nodes: Dinic has to take all a^2 paths trough these nodes each level
+// b-nodes: These nodes let us set a length for a edge. node bi is i away from the node b1 is connected to.
+// c-nodes: Just a long path that Dinic has to traverse for every path in part a
+
+// Edge weights:
+// edges betwen l's and r's: 1
+// edges from al and ar to l's and r's: a
+// edges from so, al, ar: a^2
+// all other edges: infinity
+
+bool timeHardDinicGraph(int a, int b, int c, int cutoff) {
+	// Generate graph to run on
+	int nodes = 2 + 2*(a+1) + 3*b + c;
+	int edges = (a*(a+2)) + (3*b + 2*((b+3)/4)) + c;
+	const int inf = 1e9;
+
+	std::vector<int> edge_target (edges);
+	std::vector<int> edge_source (edges);
+	std::vector<int> capacity (edges);
+	std::vector<int> flow(edges, 0);
+	std::vector<int> out_count(nodes);
+	std::vector<int> in_count(nodes);
+
+	// NODES
+	int n = 0;
+	// 2 special nodes
+	int source = n; ++n;
+	int sink = n; ++n;
+
+	// 2*(a+1) type a nodes
+	int aleft = n; ++n;
+	int aright = n; ++n;
+	std::vector<int> left_as(a);
+	std::vector<int> right_as(a);
+	for (int i = 0; i < a; ++i) {
+		left_as[i] = n; ++n;
+		right_as[i] = n; ++n;
+	}
+	
+	// 3*b type b nodes
+	std::vector<int> left_bs(b);
+	std::vector<int> right_bs(b);
+	std::vector<int> down_bs(b);
+	for (int i = 0; i < b; ++i) {
+		left_bs[i] = n; ++n;
+		right_bs[i] = n; ++n;
+		down_bs[i] = n; ++n;
+	}
+	
+	// c type c nodes
+	std::vector<int> cs(c);
+	for (int i = 0; i < c; ++i) {
+		cs[i] = n; ++n;
+	}
+
+	// EDGES
+	int m = 0;
+	// a*(a+2) edges in group a
+	for (int i = 0; i < a; ++i) {
+		// from aright
+		edge_source[m] = aright;
+		edge_target[m] = right_as[i];
+		capacity[m] = a;
+		++m;
+		// to aleft
+		edge_source[m] = left_as[i];
+		edge_target[m] = aleft;
+		capacity[m] = a;
+		++m;
+		// Between a nodes
+		for (int j = 0; j < a; ++j) {
+			edge_source[m] = right_as[i];
+			edge_target[m] = left_as[i];
+			capacity[m] = 1;
+			++m;
+		}
+	}
+	
+	// 3*b + 2*(b/4) (rounded up) edges in group b
+	// 3*(b-1) edges inside group b
+	for (int i = 0; i < b-1; ++i) {
+		edge_target[m] = left_bs[i];
+		edge_source[m] = left_bs[i+1];
+		capacity[m] = inf;
+		++m;
+		edge_target[m] = right_bs[i];
+		edge_source[m] = right_bs[i+1];
+		capacity[m] = inf;
+		++m;
+		edge_target[m] = down_bs[i];
+		edge_source[m] = down_bs[i+1];
+		capacity[m] = inf;
+		++m;
+	}
+	// 3 edges that lead out of b-groups
+	edge_target[m] = aleft;
+	edge_source[m] = left_bs[0];
+	capacity[m] = inf;
+	++m;
+	edge_target[m] = aright;
+	edge_source[m] = right_bs[0];
+	capacity[m] = inf;
+	++m;
+	edge_target[m] = cs[c-1];
+	edge_source[m] = down_bs[0];
+	capacity[m] = inf;
+	++m;
+	// 2*(b/4) (rounded up) edges to groups b, with capacity a^2
+	for (int i = 0; i * 4 < b; ++i) {
+		// Edge from source
+		if (i & 1) {
+			edge_target[m] = left_bs[4*i];
+		} else {
+			edge_target[m] = right_bs[4*i];
+		}
+		edge_source[m] = source;
+		capacity[m] = a*a;
+		++m;
+		// Edge to down-bs
+		if (i & 1) {
+			edge_source[m] = aright;
+		} else {
+			edge_source[m] = aleft;
+		}
+		edge_target[m] = down_bs[4*i];
+		capacity[m] = a*a;
+		++m;
+	}
+
+	// c edges in group c
+	for (int i = 0; i < c-1; ++i) {
+		edge_target[m] = cs[i];
+		edge_source[m] = cs[i+1];
+		capacity[m] = inf;
+		++m;
+	}
+	edge_target[m] = sink;
+	edge_source[m] = cs[0];
+	capacity[m] = inf;
+	++m;
+
+	// Calculate flow
+	FlowGraph graph (nodes, edges, source, sink, std::move(edge_source), std::move(edge_target), std::move(flow), std::move(capacity));
+	int res;
+	if (cutoff == -1) {
+		res = basicDinic(&graph);
+	} else {
+		res = dinic(&graph, cutoff);
+	}
+
+	/*
+	if (nodes < 100) {
+		std::cout << "Graph:\n";
+		std::cout << n << ' ' << m << '\n';
+		for (int i = 0; i < m; ++i) {
+			std::cout << graph.edge_source[i] << ' ' << graph.edge_target[i]  << ' ' << graph.capacity[i] << ' ' << graph.flow[i] << '\n';
+		}
+	}
+	*/
+
+	volatile int pls = res;
+	if (!checkFlowGraph(graph, res)) return false;
+	if (!tryDfsFlow(graph)) return false;
+	return true;
+}
+
+// Tests
 bool testRandomDinicSmall() {
 	return testRandomDinicGraph(10, 25, 1000000000, 0, -1);
 }
@@ -185,6 +371,12 @@ bool testRandomLinkCutDinicMedium() {
 bool testRandomMixedDinicMedium() {
 	return testRandomDinicGraph(10000, 50000, 1000000000, 0, 100);
 }
+// Hard graph
+bool testHardDinicSmall() {
+	return timeHardDinicGraph(10, 10, 10, -1);
+}
+
+// Performance tests
 bool timeRandomDinicMedium() {
 	return timeRandomDinicGraph(10000, 50000, 1000000000, 0, -1);
 }
@@ -201,25 +393,52 @@ bool timeRandomMixedDinicMedium() {
 	return timeRandomDinicGraph(10000, 50000, 1000000000, 0, 100);
 }
 bool timeRandomMixedDinicLarge() {
-	return timeRandomDinicGraph(1000000, 5000000, 1000000000, 0, 1000);
+	return timeRandomDinicGraph(1000000, 5000000, 1000000000, 0, 100);
 }
+// Hard graph
+bool timeHardDinicMedium() {
+	return timeHardDinicGraph(200, 200, 200, -1);
+}
+bool timeHardLinkCutDinicMedium() {
+	return timeHardDinicGraph(200, 200, 200, 0);
+}
+bool timeHardLinkCutDinicLarge() {
+	return timeHardDinicGraph(600, 600, 600, 0);
+}
+bool timeHardFairDinicMedium() {
+	return timeHardDinicGraph(200, 200, 1, -1);
+}
+bool timeHardFairLinkCutDinicMedium() {
+	return timeHardDinicGraph(200, 200, 1, 0);
+}
+
 TestGroup getDinicTests() {
 	std::vector<Test> tests;
-	tests.push_back(makeTest(testRandomDinicSmall, "testRandomDinicSmall()", false));
-	tests.push_back(makeTest(testRandomDinicMedium, "testRandomDinicMedium()", false));
-	tests.push_back(makeTest(testRandomLinkCutDinicSmall, "testRandomLinkCutDinicSmall()", false));
-	tests.push_back(makeTest(testRandomLinkCutDinicMedium, "testRandomLinkCutDinicMedium()", false));
-	tests.push_back(makeTest(testRandomMixedDinicMedium, "testRandomMixedDinicMedium()", false));
+	// On random graphs
+	tests.push_back(makeTest(testRandomDinicSmall, "testRandomDinicSmall", false));
+	tests.push_back(makeTest(testRandomDinicMedium, "testRandomDinicMedium", false));
+	tests.push_back(makeTest(testRandomLinkCutDinicSmall, "testRandomLinkCutDinicSmall", false));
+	tests.push_back(makeTest(testRandomLinkCutDinicMedium, "testRandomLinkCutDinicMedium", false));
+	tests.push_back(makeTest(testRandomMixedDinicMedium, "testRandomMixedDinicMedium", false));
+	// On worst-case graph
+	tests.push_back(makeTest(testHardDinicSmall, "testHardDinicSmall", false));
 	return makeTestGroup(tests, "dinic tests", true);
 }
 TestGroup getDinicTimeTests() {
 	std::vector<Test> tests;
-	tests.push_back(makeTest(timeRandomDinicMedium, "timeRandomDinicMedium()", true));
-	tests.push_back(makeTest(timeRandomDinicLarge, "timeRandomDinicLarge()", true));
-	tests.push_back(makeTest(timeRandomLinkCutDinicMedium, "timeRandomLinkCutDinicMedium()", true));
-	tests.push_back(makeTest(timeRandomLinkCutDinicLarge, "timeRandomLinkCutDinicLarge()", true));
-	tests.push_back(makeTest(timeRandomMixedDinicMedium, "timeRandomMixedDinicMedium()", true));
-	tests.push_back(makeTest(timeRandomMixedDinicLarge, "timeRandomMixedDinicLarge()", true));
+	// On random graphs
+	tests.push_back(makeTest(timeRandomDinicMedium, "timeRandomDinicMedium", true));
+	tests.push_back(makeTest(timeRandomDinicLarge, "timeRandomDinicLarge", true));
+	tests.push_back(makeTest(timeRandomLinkCutDinicMedium, "timeRandomLinkCutDinicMedium", true));
+	tests.push_back(makeTest(timeRandomLinkCutDinicLarge, "timeRandomLinkCutDinicLarge", true));
+	tests.push_back(makeTest(timeRandomMixedDinicMedium, "timeRandomMixedDinicMedium", true));
+	tests.push_back(makeTest(timeRandomMixedDinicLarge, "timeRandomMixedDinicLarge", true));
+	// On worst-case graph
+	tests.push_back(makeTest(timeHardDinicMedium, "timeHardDinicMedium", true));
+	tests.push_back(makeTest(timeHardLinkCutDinicMedium, "timeHardLinkCutDinicMedium", true));
+	tests.push_back(makeTest(timeHardLinkCutDinicLarge, "timeHardLinkCutDinicLarge", true));
+	tests.push_back(makeTest(timeHardFairDinicMedium, "timeHardFairDinicMedium", true));
+	tests.push_back(makeTest(timeHardFairLinkCutDinicMedium, "timeHardFairLinkCutDinicMedium", true));
 	return makeTestGroup(tests, "dinic performance tests", true);
 }
 

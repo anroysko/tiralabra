@@ -1,5 +1,5 @@
 link_flags :=
-compile_flags := -O3 -march=native -std=c++11
+compile_flags := -O3 -march=native -DNDEBUG -std=c++11
 cov_link_flags := $(link_flags) --coverage
 cov_compile_flags := -g --coverage -std=c++11
 CC := g++
