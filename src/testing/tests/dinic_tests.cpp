@@ -106,7 +106,7 @@ bool testRandomDinicGraph(int nodes, int edges, int maxcap, int seed, int cutoff
 
 	FlowGraph graph (nodes, edges, source, sink, std::move(edge_source), std::move(edge_target), std::move(flow), std::move(capacity));
 	long long res;
-	if (cutoff = -1) {
+	if (cutoff == -1) {
 		res = basicDinic(&graph);
 	} else {
 		res = dinic(&graph, cutoff);
@@ -415,30 +415,28 @@ bool timeHardFairLinkCutDinicMedium() {
 TestGroup getDinicTests() {
 	std::vector<Test> tests;
 	// On random graphs
-	tests.push_back(makeTest(testRandomDinicSmall, "testRandomDinicSmall", false));
-	tests.push_back(makeTest(testRandomDinicMedium, "testRandomDinicMedium", false));
-	tests.push_back(makeTest(testRandomLinkCutDinicSmall, "testRandomLinkCutDinicSmall", false));
-	tests.push_back(makeTest(testRandomLinkCutDinicMedium, "testRandomLinkCutDinicMedium", false));
-	tests.push_back(makeTest(testRandomMixedDinicMedium, "testRandomMixedDinicMedium", false));
-	// On worst-case graph
-	tests.push_back(makeTest(testHardDinicSmall, "testHardDinicSmall", false));
+	tests.push_back(makeTest(testRandomDinicSmall, "test Dinic RandomSmall", false));
+	tests.push_back(makeTest(testRandomDinicMedium, "test Dinic RandomMedium", false));
+	tests.push_back(makeTest(testRandomLinkCutDinicSmall, "test LinkCutDinic RandomSmall", false));
+	tests.push_back(makeTest(testRandomLinkCutDinicMedium, "test LinkCutDinic RandomMedium", false));
+	tests.push_back(makeTest(testRandomMixedDinicMedium, "test MixedDinic RandomMedium", false));
 	return makeTestGroup(tests, "dinic tests", true);
 }
 TestGroup getDinicTimeTests() {
 	std::vector<Test> tests;
 	// On random graphs
-	tests.push_back(makeTest(timeRandomDinicMedium, "timeRandomDinicMedium", true));
-	tests.push_back(makeTest(timeRandomDinicLarge, "timeRandomDinicLarge", true));
-	tests.push_back(makeTest(timeRandomLinkCutDinicMedium, "timeRandomLinkCutDinicMedium", true));
-	tests.push_back(makeTest(timeRandomLinkCutDinicLarge, "timeRandomLinkCutDinicLarge", true));
-	tests.push_back(makeTest(timeRandomMixedDinicMedium, "timeRandomMixedDinicMedium", true));
-	tests.push_back(makeTest(timeRandomMixedDinicLarge, "timeRandomMixedDinicLarge", true));
+	tests.push_back(makeTest(timeRandomDinicMedium, "time Dinic RandomMedium", true));
+	tests.push_back(makeTest(timeRandomDinicLarge, "time Dinic RandomLarge", true));
+	tests.push_back(makeTest(timeRandomLinkCutDinicMedium, "time LinkCutDinic RandomMedium", true));
+	tests.push_back(makeTest(timeRandomLinkCutDinicLarge, "time LinkCutDinic RandomLarge", true));
+	tests.push_back(makeTest(timeRandomMixedDinicMedium, "time MixedDinic RandomMedium", true));
+	tests.push_back(makeTest(timeRandomMixedDinicLarge, "time MixedDinic RandomLarge", true));
 	// On worst-case graph
-	tests.push_back(makeTest(timeHardDinicMedium, "timeHardDinicMedium", true));
-	tests.push_back(makeTest(timeHardLinkCutDinicMedium, "timeHardLinkCutDinicMedium", true));
-	tests.push_back(makeTest(timeHardLinkCutDinicLarge, "timeHardLinkCutDinicLarge", true));
-	tests.push_back(makeTest(timeHardFairDinicMedium, "timeHardFairDinicMedium", true));
-	tests.push_back(makeTest(timeHardFairLinkCutDinicMedium, "timeHardFairLinkCutDinicMedium", true));
+	tests.push_back(makeTest(timeHardDinicMedium, "time Dinic HardMedium", true));
+	tests.push_back(makeTest(timeHardLinkCutDinicMedium, "time LinkCutDinic HardMedium", true));
+	tests.push_back(makeTest(timeHardLinkCutDinicLarge, "time LinkCutDinic HardLarge", true));
+	tests.push_back(makeTest(timeHardFairDinicMedium, "time Dinic FairHardMedium", true));
+	tests.push_back(makeTest(timeHardFairLinkCutDinicMedium, "time LinkCutDinic FairHardMedium", true));
 	return makeTestGroup(tests, "dinic performance tests", true);
 }
 

@@ -26,7 +26,7 @@ bool testRandomLinkCutOperations(int ini_nodes, int queries, int maxval, int see
 	}
 
 	for (int j = 0; j < queries; ++j) {
-		int t = rand() % 6;
+		int t = rand() % 7;
 		if (t == 0) {
 			// insert
 			int val = rand() % maxval;
@@ -77,13 +77,14 @@ bool testRandomLinkCutOperations(int ini_nodes, int queries, int maxval, int see
 			int tree_ans = tree.pathMinVal(ind);
 			if (tree_ans != ans) return false;
 		} else if (t == 6) {
-			// pathMinVal
+			// pathMinInd
+			// Tiebreaker: Take highest up one
 			int ind = rand() % nodes;
 			int cur = ind;
 			int ans = cur;
 			while(parent[cur] != -1) {
 				cur = parent[cur];
-				if (value[cur] < value[ans]) ans = cur;
+				if (value[cur] <= value[ans]) ans = cur;
 			}
 			int tree_ans = tree.pathMinInd(ind);
 			if (tree_ans != ans) return false;
@@ -117,7 +118,7 @@ bool timeRandomLinkCutOperations(int ini_nodes, int queries, int maxval, int see
 	int answer = 0;
 
 	for (int j = 0; j < queries; ++j) {
-		int t = rand() % 6;
+		int t = rand() % 7;
 		if (t == 0) {
 			// insert
 			int val = rand() % maxval;
@@ -229,17 +230,17 @@ bool timeLinkCutOperationsWideLarge() {
 }
 TestGroup getLinkCutTests() {
 	std::vector<Test> res;
-	res.push_back(makeTest(testRandomLinkCutOperationsMedium, "testRandomLinkCutOperationsMedium"));
-	res.push_back(makeTest(testRandomLinkCutOperationsLarge, "testRandomLinkCutOperationsLarge"));
+	res.push_back(makeTest(testRandomLinkCutOperationsMedium, "test LinkCut RandomMedium"));
+	res.push_back(makeTest(testRandomLinkCutOperationsLarge, "test LinkCut RandomLarge"));
 	return makeTestGroup(res, "link/cut tree tests", true);
 }
 TestGroup getLinkCutTimeTests() {
 	std::vector<Test> res;
-	res.push_back(makeTest(timeRandomLinkCutOperationsMedium, "timeRandomLinkCutOperationsMedium", true));
-	res.push_back(makeTest(timeRandomLinkCutOperationsLarge, "timeRandomLinkCutOperationsLarge", true));
-	res.push_back(makeTest(timeRandomLinkCutOperationsDeepMedium, "timeRandomLinkCutOperationsDeepMedium", true));
-	res.push_back(makeTest(timeRandomLinkCutOperationsDeepLarge, "timeRandomLinkCutOperationsDeepLarge", true));
-	res.push_back(makeTest(timeLinkCutOperationsWideMedium, "timeLinkCutOperationsWideMedium", true));
-	res.push_back(makeTest(timeLinkCutOperationsWideLarge, "timeLinkCutOperationsWideLarge", true));
+	res.push_back(makeTest(timeRandomLinkCutOperationsMedium, "time LinkCut RandomMedium", true));
+	res.push_back(makeTest(timeRandomLinkCutOperationsLarge, "time LinkCut RandomLarge", true));
+	res.push_back(makeTest(timeRandomLinkCutOperationsDeepMedium, "time LinkCut DeepMedium", true));
+	res.push_back(makeTest(timeRandomLinkCutOperationsDeepLarge, "time LinkCut DeepLarge", true));
+	res.push_back(makeTest(timeLinkCutOperationsWideMedium, "time LinkCut WideMedium", true));
+	res.push_back(makeTest(timeLinkCutOperationsWideLarge, "time LinkCut WideLarge", true));
 	return makeTestGroup(res, "link/cut tree performance tests", true);
 }

@@ -4,39 +4,12 @@
 #include <utility>	// std::pair
 #include <iostream>	// std::cout
 
-// Contains templates, so code must be in the header (?)
+// Contains templates, so defined in header
 // For all functions, T needs to fulfill the following:
 // 1. Contains T* left, right, parent. They should be the pointers to related elements in the binary tree
 // 2. Has function update. It can update information such as subtree size, sum or maximum.
 // 3. Has function push. Push pushes down operations to be applied to the whole subtree. With this, you can for example have a value "dec_value", that tells you how much must be decremented from all values in a subtree. 
 // 4. Has function isRoot. This can be used so that the actual root's parent is path-parent, and the value is conveniently updated
-// Example struct
-//	struct ExampleNode {
-//		ExampleNode* left;
-//		ExampleNode* right;
-//		ExampleNode* parent;
-//		int size; // subtree size
-//		int value; // value of this node
-//		int dec_value; // How much all values in this node's subtree must be decremented
-//		
-//
-//		inline bool isRoot() {
-//			return parent == nullptr;
-//		}
-//
-//		inline void push() {
-//			value -= dec_value;
-//			if (left != nullptr) left->dec_value += dec_value;
-//			if (right != nullptr) right->dec_value += dec_value;
-//			dec_value = 0;
-//		}		
-//
-//		inline void update() {
-//			size = 1;
-//			if (left != nullptr) size += left->size;
-//			if (right != nullptr) size += right->size;
-//		}
-//	}
 
 // returns true if x is its parents left child
 template<class T>

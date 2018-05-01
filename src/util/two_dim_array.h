@@ -19,25 +19,35 @@ struct TwoDimArray {
 		total_size = 0;
 		size = 0;
 	}
-	TwoDimArray(const TwoDimArray& oth) : size(oth.size), total_size(oth.total_size) {
-		offset = new int[size];
-		data = new T[total_size];
+	void init(int total_size, int size) {
+		this->data = new T[total_size];
+		this->offset = new int[size];
+		this->total_size = total_size;
+		this->size = size;
+	}
+	TwoDimArray(const TwoDimArray& oth) {
+		init(oth.total_size, oth.size);
 		for (int i = 0; i < size; ++i) offset[i] = oth.offset[i];
 		for (int i = 0; i < total_size; ++i) data[i] = oth.data[i];
 	}
 	TwoDimArray(int total_size, const std::vector<int>& sizes) {
-		this->total_size = total_size;
-		size = sizes.size();
-		data = new T[total_size];
-		offset = new int[size];
+		init(total_size, sizes.size());
 		for (int i = 0, sum = 0; i < size; sum += sizes[i], ++i) offset[i] = sum;
 	}
 	TwoDimArray(int total_size, int size, const int* ref_offset) {
-		this->total_size = total_size;
-		this->size = size;
-		data = new T[total_size];
-		offset = new int[size];
+		init(total_size, size);
 		for (int i = 0; i < size; ++i) offset[i] = ref_offset[i];
+	}
+	void move(TwoDimArray& oth) {
+		oth.~TwoDimArray();
+		oth.data = data;
+		oth.offset = offset;
+		oth.total_size = total_size;
+		oth.size = size;
+		data = nullptr;
+		offset = nullptr;
+		total_size = 0;
+		size = 0;
 	}
 	~TwoDimArray() {
 		if (data != nullptr) delete[] data;

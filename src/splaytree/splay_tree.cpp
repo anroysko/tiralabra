@@ -4,7 +4,6 @@
 
 #include "splay_tree.h"
 
-// Splay node functions
 SplayNode::SplayNode(int v) {
 	left = nullptr;
 	right = nullptr;
@@ -13,6 +12,7 @@ SplayNode::SplayNode(int v) {
 	size = 1;
 }
 
+// We only store pointer to root of splaytree, so it has to delete its children
 SplayNode::~SplayNode() {
 	if (left != nullptr) delete left;
 	if (right != nullptr) delete right;
@@ -39,19 +39,6 @@ SplayNode* SplayNode::findKth(SplayNode* root, int k) {
 		return root;
 	} else {
 		return findKth(root->right, k - (left_size + 1));
-	}
-}
-
-// Prints tree, with indentation marking depth
-void SplayNode::print(SplayNode* x, int depth) {
-	for (int i = 0; i < depth; ++i) std::cout << "  ";
-	if (x == nullptr) {
-		std::cout << "*\n";
-	} else {
-		std::cout << x->val << ' ';
-		std::cout << '\n';
-		print(x->left, depth + 1);
-		print(x->right, depth + 1);
 	}
 }
 
@@ -201,6 +188,7 @@ void SplayTree::insert(int value) {
 	}
 }
 
+// Erases node with value = arg. Returns if such was found
 bool SplayTree::erase(int value) {
 	if (root == nullptr) return false;
 	int mx = lowerBound(value); // splay element we want to erase to the root
@@ -223,9 +211,4 @@ bool SplayTree::erase(int value) {
 		// element doesn't exist
 		return false;
 	}
-}
-
-
-void SplayTree::print() {
-	SplayNode::print(root);
 }

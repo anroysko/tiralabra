@@ -471,23 +471,23 @@ bool timeHardRandomSplayLarge() {
 
 TestGroup getSplayTests() {
 	std::vector<Test> tests;
-	tests.push_back(makeTest(testZig, "testZig()"));
-	tests.push_back(makeTest(testZag, "testZag()"));
-	tests.push_back(makeTest(testSplay, "testSplay()"));
-	tests.push_back(makeTest(testJoin, "testJoin()"));
-	tests.push_back(makeTest(testSplit, "testSplit()"));
-	tests.push_back(makeTest(testInsert, "testInsert()"));
-	tests.push_back(makeTest(testErase, "testErase()"));
-	tests.push_back(makeTest(testRandomSplaySmall, "testRandomSplaySmall()"));
-	tests.push_back(makeTest(testRandomSplayMedium, "testRandomSplayMedium()"));
+	tests.push_back(makeTest(testZig, "test SplayNode Zig"));
+	tests.push_back(makeTest(testZag, "test SplayNode Zag"));
+	tests.push_back(makeTest(testSplay, "test SplayNode Splay"));
+	tests.push_back(makeTest(testJoin, "test SplayNode Join"));
+	tests.push_back(makeTest(testSplit, "test SplayNode Split"));
+	tests.push_back(makeTest(testInsert, "test SplayTree Insert"));
+	tests.push_back(makeTest(testErase, "test SplayTree Erase"));
+	tests.push_back(makeTest(testRandomSplaySmall, "test SplayTree RandomSmall"));
+	tests.push_back(makeTest(testRandomSplayMedium, "test SplayTree RandomMedium"));
 	return makeTestGroup(tests, "splay tree tests", true);
 }
 
 TestGroup getSplayTimeTests() {
 	std::vector<Test> tests;
-	tests.push_back(makeTest(timeRandomSplayMedium, "timeRandomSplayMedium()", true));
-	tests.push_back(makeTest(timeRandomSplayLarge, "timeRandomSplayLarge()", true));
-	tests.push_back(makeTest(timeHardRandomSplayMedium, "timeHardRandomSplayMedium()", true));
-	tests.push_back(makeTest(timeHardRandomSplayLarge, "timeHardRandomSplayLarge()", true));
+	tests.push_back(makeTest(timeRandomSplayMedium, "time SplayTree RandomMedium", true));
+	tests.push_back(makeTest(timeRandomSplayLarge, "time SplayTree RandomLarge", true));
+	tests.push_back(makeTest(timeHardRandomSplayMedium, "time SplayTree HardRandomMedium", true));
+	tests.push_back(makeTest(timeHardRandomSplayLarge, "time SplayTree HardRandomLarge", true));
 	return makeTestGroup(tests, "splay tree performance tests", true);
 }

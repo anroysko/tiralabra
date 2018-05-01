@@ -58,7 +58,7 @@ bool testTest(const Test& test, int indent_len, int indents, int add_width) {
 
 int testTestGroup(const TestGroup& group, int indent_len, int indents) {
 	int total_indent = indent_len * indents;
-	std::cout << '*' << makeChar(total_indent-1, '-') << group.name << ":\n";
+	std::cout << makeChar(total_indent, '-') << group.name << ":\n";
 	
 	int total = group.tests.size();
 	int correct = 0;

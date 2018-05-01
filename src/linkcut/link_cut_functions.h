@@ -8,32 +8,8 @@
 // Link/Cut nodes must have
 // 1. left child, right child, parent-pointers
 // 2. A update() function, possibly empty
-// 3. isRoot() method of the form in the example
+// 3. isRoot() function, returning if this node is the root of its chain
 // 4. A push() function, possibly empty
-// In a Link/Cut tree the nodes are divided into chains of preferred childs
-// Example struct:
-//	struct ExampleNode {
-//		ExampleNode* left;
-//		ExampleNode* right;
-//		ExampleNode* parent;
-//		int min_value;
-//		int value;
-//		
-//		void update() {
-//			min_value = this_value;
-//			if (left != nullptr) min_value = std::min(min_value, left->min_value);
-//			if (right != nullptr) min_value = std::min(min_value, right->min_value);
-//		}
-//		void push() {/*do nothing*/}
-//
-//		// A chain's parent is the chain's path-parent
-//		// How to separate this from a usual parent-link? chain's root is not a child for path-parent.
-//		// isRoot() has to be this exact or equivalent function
-//		bool isRoot() {
-//			return (parent == nullptr) || ((parent->left != this) && (parent->right != this));
-//		}
-//	};
-
 
 // Accesses node. After accessing node i, it is the parent of the tree representing a chain from its represented tree's root to i.
 // Therefore you can query for path-aggregate(like minimum value in path) by accessing the node's values
@@ -70,6 +46,7 @@ void access(T* node) {
 	splay(node);
 }
 
+// Returns node that is the root of the tree arg is in
 template<class T>
 T* subtreeRoot(T* node) {
 	assert(node != nullptr);
@@ -80,11 +57,11 @@ T* subtreeRoot(T* node) {
 }
 
 // Links child to node
+// WARNING: you have to be careful that "node" is not "child"'s child. This causes undefined behaviour
 template<class T>
 void linkChild(T* child, T* node) {
 	assert(child != nullptr);
 	assert(node != nullptr);
-	assert(subtreeRoot(node) != child);
 	access(child);
 	access(node);
 	assert(child->parent == nullptr); // Child must not have a parent in the represented tree
@@ -96,6 +73,7 @@ void linkChild(T* child, T* node) {
 	node->update();
 }
 
+// Cut off parent of "node"
 template<class T>
 void cutParent(T* node) {
 	assert(node != nullptr);
@@ -111,13 +89,17 @@ void cutParent(T* node) {
 	}
 }
 
+// Returns node with minimum value on path from x to root, breaking ties by picking the one closest to root.
 // Requires additional properties
+// 1. getMinVal() function, returning minimum value below a node
+// 2. min_value, with its value after pushing being the minimum value below a node
 template<class T>
 T* pathMinNode(T* x) {
 	assert(x != nullptr);
 	access(x);
 	while(true) {
 		x->push();
+		// Find leftmost minimum value, so prefer left-this-right
 		if (x->left != nullptr && x->left->getMinVal() == x->min_value) {
 			x = x->left;
 		} else if (x->value == x->min_value) {
@@ -129,6 +111,5 @@ T* pathMinNode(T* x) {
 	splay(x);
 	return x;
 }
-
 
 #endif // __LINKCUT_LINK_CUT_FUNCTIONS_H_

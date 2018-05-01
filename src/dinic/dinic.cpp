@@ -1,15 +1,18 @@
-#include <vector>
-#include <assert.h>
+#include <vector> // std::vector
+#include <assert.h> // assert
+#include <utility> // std::move
 #include "./../util/two_dim_array.h"
 #include "./../linkcut/link_cut_functions.h"
 #include "dinic.h"
 
 // Definitions of flowgraph's constructors
+// Copy constructor from other flowgraph.
 FlowGraph::FlowGraph(const FlowGraph& oth) :
 	n(oth.n), m(oth.m), source(oth.source), sink(oth.sink),
 	edge_source(oth.edge_source), edge_target(oth.edge_target),
 	flow(oth.flow), capacity(oth.capacity), edges(oth.edges) {
 }
+
 FlowGraph::FlowGraph(int n, int m, int source, int sink, std::vector<int>&& edge_source, std::vector<int>&& edge_target, std::vector<int>&& flow, std::vector<int>&& capacity) {
 	this->n = n;
 	this->m = m;
@@ -20,7 +23,8 @@ FlowGraph::FlowGraph(int n, int m, int source, int sink, std::vector<int>&& edge
 	this->flow = flow;
 	this->capacity = capacity;
 
-	// Init edge array
+	// Init edge array from edge data
+	// edges[i][j] = edge, means that the j'th edge coming or leaving from node "i" has index "edge"
 	std::vector<int> conns (n, 0);
 	for (int i = 0; i < m; ++i) {
 		++conns[edge_source[i]];
@@ -36,9 +40,7 @@ FlowGraph::FlowGraph(int n, int m, int source, int sink, std::vector<int>&& edge
 		++inds[es];
 		++inds[et];
 	}
-	edges = tmp;
-	tmp.data = nullptr;
-	tmp.offset = nullptr;
+	tmp.move(edges);
 }
 
 // Empty namespace to hide these functions and structs
