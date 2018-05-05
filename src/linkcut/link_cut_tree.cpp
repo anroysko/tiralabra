@@ -1,5 +1,7 @@
 #include <assert.h>	// assert
+#include "./../util/vector.h" // Vector
 #include "link_cut_functions.h"	// Link/Cut functions
+
 #include "link_cut_tree.h"
 
 LinkCutNode::LinkCutNode(int val, int ind) {
@@ -11,24 +13,23 @@ LinkCutNode::LinkCutNode(int val, int ind) {
 	index = ind;
 }
 
-LinkCutTree::LinkCutTree(int n, std::vector<int> vals) {
-	nodes.resize(n);
-	for (int i = 0; i < n; ++i) {
-		nodes[i] = new LinkCutNode(vals[i], i);
-	}
+LinkCutTree::LinkCutTree(int n) : nodes(n) {
+	for (int i = 0; i < n; ++i) nodes[i] = new LinkCutNode(0, i);
 }
 
 LinkCutTree::~LinkCutTree() {
 	for (int i = 0; i < nodes.size(); ++i) {
-		delete nodes[i];
+		if (nodes[i] != nullptr) {
+			delete nodes[i];
+			nodes[i] = nullptr;
+		}
 	}
 	nodes.resize(0);
-	nodes.shrink_to_fit();
 }
 
 // Insert node with value val
 void LinkCutTree::insert(int val) {
-	nodes.push_back(new LinkCutNode(val, nodes.size()));
+	nodes.push(new LinkCutNode(val, nodes.size()));
 }
 
 // Set value of node with index i to val

@@ -1,4 +1,4 @@
-#Käyttöohje
+# Käyttöohje
 
 Ohjelma ottaa sisään flow-ongelman, ja ratkaisee sen, tulostaen ensin kuinka paljon flowia siitä pystyy työntämään läpi, ja sen jälkeen jokaiselle edgelle, kuinka paljon sen läpi kulkee ratkaisussa flowia.
 

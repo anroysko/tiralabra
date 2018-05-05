@@ -1,7 +1,7 @@
 #ifndef __LINKCUTTREE_LINK_CUT_H_
 #define __LINKCUTTREE_LINK_CUT_H_
 
-#include <vector>
+#include "./../util/vector.h" // Vector
 
 struct LinkCutNode {
 	LinkCutNode* left; // Left child
@@ -33,10 +33,10 @@ struct LinkCutNode {
 
 class LinkCutTree {
 	private:
-		std::vector<LinkCutNode*> nodes; // Vector containing all nodes in this tree
+		Vector<LinkCutNode*> nodes; // Vector containing all nodes in this tree
 	public:
 		LinkCutTree() = default;
-		LinkCutTree(int n, std::vector<int> vals);
+		LinkCutTree(int size);
 		~LinkCutTree();
 		void insert(int val); // Insert node with value val
 		void setVal(int i, int val); // Set value of node with index i to val

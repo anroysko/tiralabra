@@ -20,8 +20,9 @@ bool testRandomLinkCutOperations(int ini_nodes, int queries, int maxval, int see
 		parent[i] = (i == 0 ? -1 : rand() % i);
 		value[i] = rand() % maxval;
 	}
-	LinkCutTree tree (nodes, value);
+	LinkCutTree tree (nodes);
 	for (int i = 0; i < nodes; ++i) {
+		tree.setVal(i, value[i]);
 		if (parent[i] != -1) tree.link(i, parent[i]);
 	}
 
@@ -110,8 +111,9 @@ bool timeRandomLinkCutOperations(int ini_nodes, int queries, int maxval, int see
 		}
 		value[i] = rand() % maxval;
 	}
-	LinkCutTree tree (nodes, value);
+	LinkCutTree tree (nodes);
 	for (int i = 0; i < nodes; ++i) {
+		tree.setVal(i, value[i]);
 		if (parent[i] != -1) tree.link(i, parent[i]);
 	}
 
@@ -188,8 +190,9 @@ bool timeLinkCutOperationsWide(int total_nodes, int queries) {
 		parent[i] = ((i == 0 || i == 1) ? -1 : i / 2);
 		value[i] = rand() % 100;
 	}
-	LinkCutTree tree (2*nodes, value);
+	LinkCutTree tree (2*nodes);
 	for (int i = 0; i < 2*nodes; ++i) {
+		tree.setVal(i, value[i]);
 		if (parent[i] != -1) tree.link(i, parent[i]);
 	}
 

@@ -1,23 +1,21 @@
-#include <vector> // std::vector
 
-#include "tests/splay_tests.h"
-#include "tests/linkcut_tests.h"
-#include "tests/dinic_tests.h"
-#include "test_util.h"
+#include <vector> // vector
+
+#include "tests/splay_tests.h" // getSplayTests
+#include "tests/linkcut_tests.h" // getLinkCutTests
+#include "tests/dinic_tests.h" // getDinicTests
+#include "test_util.h" // Test, TestGroup, testTestGroups()
 
 int main(int argc, char* argv[]) {
-
-	std::vector<TestGroup> test_groups;
+	std::vector<TestGroup> test_groups (3);
 	if (argc == 1) {
-		TestGroup splay_tests = getSplayTests();
-		TestGroup linkcut_tests = getLinkCutTests();
-		TestGroup dinic_tests = getDinicTests();
-		test_groups = {splay_tests, linkcut_tests, dinic_tests};
+		test_groups[0] = getSplayTests();
+		test_groups[1] = getLinkCutTests();
+		test_groups[2] = getDinicTests();
 	} else {
-		TestGroup splay_time_tests = getSplayTimeTests();
-		TestGroup linkcut_time_tests = getLinkCutTimeTests();
-		TestGroup dinic_time_tests = getDinicTimeTests();
-		test_groups = {splay_time_tests, linkcut_time_tests, dinic_time_tests};
+		test_groups[0] = getSplayTimeTests();
+		test_groups[1] = getLinkCutTimeTests();
+		test_groups[2] = getDinicTimeTests();
 	}
 	testTestGroups(test_groups);
 }
