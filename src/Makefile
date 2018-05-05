@@ -54,7 +54,7 @@ run : $(bin_path)$(main)
 .PHONY : coverage
 coverage : $(cov_bin_path)$(tester)
 	@lcov -q -o $(cov_bin_path)initcovdata.info -c -i -d $(cov_bin_path) -b $(cov_bin_path) 2>/dev/null
-	@./$(cov_bin_path)$(tester)
+	@./$(cov_bin_path)$(tester) 1
 	@gcov $(cov_bin_path)$(tester) -r >/dev/null
 	@lcov -q -o $(cov_bin_path)runcovdata.info -c -d $(cov_bin_path) -b $(cov_bin_path) 2>/dev/null
 	@lcov -q -a $(cov_bin_path)initcovdata.info -a $(cov_bin_path)runcovdata.info -o $(cov_bin_path)rescovdata.info 2>/dev/null
@@ -62,6 +62,9 @@ coverage : $(cov_bin_path)$(tester)
 	@lcov -q --remove $(cov_bin_path)rescovdata.info -o $(cov_bin_path)rescovdata.info $(cov_exclude_files) 2>/dev/null
 	@genhtml -q -o $(cov_bin_path)html/ $(cov_bin_path)rescovdata.info 2>/dev/null
 	@echo created coverage report index.html in bin/cov/html/index.html
+
+.PHONY : profile
+profile : $(bin_path)$(tester)
 
 .PHONY : clean
 clean :

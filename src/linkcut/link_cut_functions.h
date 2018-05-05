@@ -15,7 +15,7 @@
 // Therefore you can query for path-aggregate(like minimum value in path) by accessing the node's values
 template<class T>
 void access(T* node) {
-	assert(node != nullptr);
+	// assert(node != nullptr);
 	T* x = node;
 
 	splay(x);
@@ -27,7 +27,7 @@ void access(T* node) {
 	
 	while(true) {
 		// Here node is its chain's root, so its parent is the chain's path-parent
-		assert(x->isRoot());
+		// assert(x->isRoot());
 		T* next = x->parent;
 
 		if (next == nullptr) break;
@@ -49,7 +49,7 @@ void access(T* node) {
 // Returns node that is the root of the tree arg is in
 template<class T>
 T* subtreeRoot(T* node) {
-	assert(node != nullptr);
+	// assert(node != nullptr);
 	access(node);
 	T* root = findFirst(node);
 	splay(root);
@@ -60,8 +60,8 @@ T* subtreeRoot(T* node) {
 // WARNING: you have to be careful that "node" is not "child"'s child. This causes undefined behaviour
 template<class T>
 void linkChild(T* child, T* node) {
-	assert(child != nullptr);
-	assert(node != nullptr);
+	// assert(child != nullptr);
+	// assert(node != nullptr);
 	access(child);
 	access(node);
 	assert(child->parent == nullptr); // Child must not have a parent in the represented tree
@@ -76,7 +76,7 @@ void linkChild(T* child, T* node) {
 // Cut off parent of "node"
 template<class T>
 void cutParent(T* node) {
-	assert(node != nullptr);
+	// assert(node != nullptr);
 	access(node);
 	if (node->left == nullptr) {
 		// Nothing to cut
@@ -95,7 +95,7 @@ void cutParent(T* node) {
 // 2. min_value, with its value after pushing being the minimum value below a node
 template<class T>
 T* pathMinNode(T* x) {
-	assert(x != nullptr);
+	// assert(x != nullptr);
 	access(x);
 	while(true) {
 		x->push();

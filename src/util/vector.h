@@ -4,12 +4,19 @@
 #include <assert.h> // assert
 #include <string.h> // memcpy
 
+
 /// Dynamic array.
 /// Does a lot of copying. Should not be used with large structs.
 /// ints/pointers are ideal.
 /// Also has no minimum size, so it is slow when pushing/poppin alternatively at zero or one elements.
 template<class T>
 class Vector {
+	/// Minimum capacity a vector can have.
+	/// Capacity is always at least this.
+	const static int MIN_SIZE = 10;
+	/// How much larger the vector gets when it requires more space.
+	const static int GROWTH_FACTOR = 2;
+
 	private:
 		T* data; /// Raw data.
 		int el_count; /// Amount of elements.
@@ -17,42 +24,39 @@ class Vector {
 	public:
 		/// Regular constructor.
 		Vector() {
-			this->el_count = 0;
-			this->capacity = 0;
-			this->data = nullptr;
+			el_count = 0;
+			capacity = MIN_SIZE;
+			data = new T[MIN_SIZE];
 		}
-		/// Construct with size "size".
+		/// Construct with size "ini_size".
 		/// Initial state of elements is undefined.
 		Vector(int size) {
-			this->el_count = size;
-			this->capacity = size;
-			this->data = new T[capacity];
+			el_count = size;
+			capacity = (size < MIN_SIZE ? MIN_SIZE : size);
+			data = new T[capacity];
 		}
 		/// Construct with size "size" and all elements being "val".
 		Vector(int size, T val) {
-			this->el_count = size;
-			this->capacity = size;
-			this->data = new T[capacity];
+			el_count = size;
+			capacity = (size < MIN_SIZE ? MIN_SIZE : size);
+			data = new T[capacity];
 			// TODO: speed this up
 			for (int i = 0; i < size; ++i) data[i] = val;
 		}
 		/// Copy from other Vector.
 		Vector(const Vector& oth) {
 			el_count = oth.el_count;
-			capacity = oth.el_count;
+			capacity = (oth.el_count < MIN_SIZE ? MIN_SIZE : oth.el_count);
 			data = new T[capacity];
-			memcpy(data, oth.data, sizeof(T) * capacity);
+			memcpy(data, oth.data, sizeof(T) * oth.el_count);
 			// for (int i = 0; i < capacity; ++i) data[i] = oth.data[i];
 		}
 		/// Move from other Vector.
-		/// Sets "oth" to clear() ed state.
+		/// Does not guarantee anything about the state of oth.
 		Vector(Vector&& oth) {
 			el_count = oth.el_count;
 			capacity = oth.capacity;
 			data = oth.data;
-			
-			oth.el_count = 0;
-			oth.capacity = 0;
 			oth.data = nullptr;
 		}
 
@@ -80,22 +84,12 @@ class Vector {
 		/// Also used internally.
 		void reserve(int space) {
 			// assert(space >= el_count);
-			if (space == 0) {
-				clear();
-			} else {
-				T* new_data = new T[space];
-				memcpy(new_data, data, sizeof(T) * el_count);
-				// for (int i = 0; i < el_count; ++i) new_data[i] = data[i];
-				if (data != nullptr) delete[] data;
-				
-				capacity = space;
-				data = new_data;
-			}
-		}
-		// Inline small functions
-		/// Shrinks the vector to have capacity equal to its size.
-		inline void shrink() {
-			reserve(el_count);
+			T* new_data = new T[space];
+			memcpy(new_data, data, sizeof(T) * el_count);
+			// for (int i = 0; i < el_count; ++i) new_data[i] = data[i];
+			if (data != nullptr) delete[] data;	
+			capacity = space;
+			data = new_data;
 		}
 		/// Resizes the vector.
 		/// Sets amount of elements to "size".
@@ -108,15 +102,14 @@ class Vector {
 		inline void push(T val) {
 			// 2 * (capacity + 1) so that after pushing back capacity is 2 * el_count.
 			if (el_count == capacity) {
-				reserve(2 * (capacity + 1));
+				reserve(GROWTH_FACTOR * (capacity + 1));
 			}
 			data[el_count] = val;
 			++el_count;
 		}
 		/// Pop from the back of the vector.
-		/// To free memory, you need to call shrink()
+		/// You can free memory by calling reserve on smaller one.
 		inline void pop() {
-			// assert(el_count > 0);
 			--el_count;
 		}
 		/// Get back element in the vector.
@@ -141,27 +134,23 @@ class Vector {
 		}
 
 		/// Copy assignment.
-		/// Same as copy constructor, expect that it clears first.
 		Vector& operator=(const Vector& oth) {
-			clear();
 			el_count = oth.el_count;
-			capacity = oth.el_count;
+			capacity = (oth.el_count < MIN_SIZE ? MIN_SIZE : oth.el_count);
+			delete[] data;
 			data = new T[capacity];
 			memcpy(data, oth.data, sizeof(T) * capacity);
 			// for (int i = 0; i < capacity; ++i) data[i] = oth.data[i];
 		}
 
 		/// Move assignment.
-		/// Same as move constructor, expect that it clears first.
-		/// Sets "oth" to clear() ed state.
+		/// Sets "oth" to an unspecified state. 
 		Vector& operator=(Vector&& oth) {
-			clear();
 			el_count = oth.el_count;
 			capacity = oth.capacity;
+			delete[] data;
 			data = oth.data;
 			
-			oth.el_count = 0;
-			oth.capacity = 0;
 			oth.data = nullptr;
 		}
 };

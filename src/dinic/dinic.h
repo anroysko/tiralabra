@@ -27,7 +27,7 @@ struct FlowGraph {
 	TwoDimArray<int> edges;
 	
 	/// Build a flowgraph from the values.
-	FlowGraph(int n, int m, int source, int sink, Vector<int>&& edge_source, Vector<int>&& edge_target, Vector<int>&& flow, Vector<int>&& capacity);
+	FlowGraph(int n, int m, int source, int sink, Array<int>&& edge_source, Array<int>&& edge_target, Array<int>&& flow, Array<int>&& capacity);
 	/// Copy constructor.
 	FlowGraph(const FlowGraph& graph);
 };

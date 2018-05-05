@@ -1,4 +1,4 @@
-#include <assert.h> // assert
+// #include <assert.h> // assert
 #include <utility> // std::move
 #include "./../linkcut/link_cut_functions.h" // Link/Cut functions
 #include "./../util/vector.h" // std::vector
@@ -192,13 +192,11 @@ namespace {
 		// Edge a->b is added to the level graph if
 		// dist[a] = dist[b] + 1
 		que.push(graph->sink);
-		assert(que.size() == 1);
 
 		dist[graph->sink] = 0;
 		for (int i = 0; i < que.size(); ++i) {
-			assert(que.size() > i);
 			int ind = que[i];
-			assert(que.size() > i);
+			// assert(que.size() > i);
 			for (int j = 0; j < graph->edges.getArraySize(ind); ++j) {
 				int edge = graph->edges[ind][j];
 				int target = getOther(ind, edge);
@@ -210,7 +208,6 @@ namespace {
 						}
 						++level_graph->active_inds[target];
 						
-						assert(level_graph->edges.getArraySize(target) > level_graph->active_inds[target]);
 						level_graph->edges[target][level_graph->active_inds[target]] = edge;
 					}
 				}
@@ -363,8 +360,8 @@ long long dinic(FlowGraph* flow_graph, int swap_const = 100) {
 						} else {
 							node->value = getCapacity(ind, edge);
 							node->update();
-							assert(subtreeRoot(node) == node);
-							assert(node != subtreeRoot(link_cut_nodes[getOther(ind, edge)]));
+							// assert(subtreeRoot(node) == node);
+							// assert(node != subtreeRoot(link_cut_nodes[getOther(ind, edge)]));
 							linkChild(node, link_cut_nodes[getOther(ind, edge)]);
 							break; // Active edge swapped, break
 						}

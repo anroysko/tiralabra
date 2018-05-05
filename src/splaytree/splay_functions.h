@@ -14,8 +14,8 @@
 // returns true if x is its parents left child
 template<class T>
 inline bool isLeftChild(T* x) {
-	assert(x != nullptr);
-	assert(x->parent != nullptr);
+	// assert(x != nullptr);
+	// assert(x->parent != nullptr);
 	return (x->parent->left == x);
 }
 
@@ -41,8 +41,8 @@ inline bool isLeftChild(T* x) {
 // y->right
 template<class T>
 void zig(T* x) {
-	assert(x != nullptr);
-	assert(x->left != nullptr);
+	// assert(x != nullptr);
+	// assert(x->left != nullptr);
 
 	T* y = x->left;
 	x->push();
@@ -93,8 +93,8 @@ void zig(T* x) {
 // z->left
 template<class T>
 void zag(T* x) {
-	assert(x != nullptr);
-	assert(x->right != nullptr);
+	// assert(x != nullptr);
+	// assert(x->right != nullptr);
 
 	T* z = x->right;
 	x->push();
@@ -125,9 +125,9 @@ void zag(T* x) {
 
 // Performs a zig/zag to bring x up one step in the tree
 template<class T>
-void rotateUp(T* x) {
-	assert(x != nullptr);
-	assert(! x->isRoot());
+inline void rotateUp(T* x) {
+	// assert(x != nullptr);
+	// assert(! x->isRoot());
 	if (isLeftChild(x)) {
 		zig(x->parent);
 	} else {
@@ -138,8 +138,8 @@ void rotateUp(T* x) {
 // Perform a splay tree splay step on x
 template<class T>
 void splayStep(T* x) {
-	assert(x != nullptr);
-	assert(! x->isRoot());
+	// assert(x != nullptr);
+	// assert(! x->isRoot());
 
 	T* y = x->parent;
 	if (y->isRoot()) {
@@ -162,14 +162,14 @@ void splayStep(T* x) {
 // Splay a node to the top of the tree
 template<class T>
 void splay(T* x) {
-	assert(x != nullptr);
+	// assert(x != nullptr);
 	while(! x->isRoot()) splayStep(x);
 }
 
 // Find first element (leftmost) in binary tree
 template<class T>
 T* findFirst(T* root) {
-	assert(root != nullptr);
+	// assert(root != nullptr);
 	T* x = root;
 	while(x->left != nullptr) x = x->left;
 	splay(x);
@@ -179,7 +179,7 @@ T* findFirst(T* root) {
 // Find last element (rightmost) in binary tree
 template<class T>
 T* findLast(T* root) {
-	assert(root != nullptr);
+	// assert(root != nullptr);
 	T* x = root;
 	while(x->right != nullptr) x = x->right;
 	splay(x);
@@ -189,7 +189,7 @@ T* findLast(T* root) {
 // Find next element in binary tree (nullptr if there is none)
 template<class T>
 T* findNext(T* node) {
-	assert(node != nullptr);
+	// assert(node != nullptr);
 	splay(node);
 	if (node->right == nullptr) return nullptr;
 	T* next = findFirst(node->right);
@@ -198,7 +198,7 @@ T* findNext(T* node) {
 // Find prev element in binary tree (nullptr if there is none)
 template<class T>
 T* findPrev(T* node) {
-	assert(node != nullptr);
+	// assert(node != nullptr);
 	splay(node);
 	if (node->left == nullptr) return nullptr;
 	T* prev = findLast(node->left);
@@ -211,8 +211,8 @@ template<class T>
 T* joinTrees(T* a, T* b) {
 	if (a == nullptr) return b;
 	if (b == nullptr) return a;
-	assert((a->isRoot()) && (a->parent == nullptr));
-	assert((b->isRoot()) && (b->parent == nullptr));
+	// assert((a->isRoot()) && (a->parent == nullptr));
+	// assert((b->isRoot()) && (b->parent == nullptr));
 	a = findLast(a);
 
 	a->push();
@@ -226,7 +226,7 @@ T* joinTrees(T* a, T* b) {
 // Splits the tree into two subtrees A and B, with split_point being A's last (rightmost) node.
 template<class T>
 std::pair<T*, T*> splitTree(T* split_point) {
-	assert(split_point != nullptr);
+	// assert(split_point != nullptr);
 	splay(split_point);
 	split_point->push();
 

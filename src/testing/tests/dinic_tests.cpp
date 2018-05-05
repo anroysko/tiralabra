@@ -30,8 +30,10 @@ bool checkFlowGraph(const FlowGraph& graph, long long ans) {
 // Test if more flow can be pushed
 bool tryDfsFlow(const FlowGraph& graph) {
 	Vector<int> visited (graph.n, false);
+
 	Vector<int> que;
 	que.reserve(graph.n);
+
 	visited[graph.source] = true;
 	que.push(graph.source);
 	for (int j = 0; j < que.size(); ++j) {
