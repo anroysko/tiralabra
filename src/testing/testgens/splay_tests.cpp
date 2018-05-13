@@ -81,6 +81,7 @@ bool compare(std::vector<int>& ans, SplayNode* root) {
 	bool pps = checkParentPointers(root);
 	bool sizes = (checkSizes(root) != -1);
 	bool success = pps && sizes && match;
+	delete root;
 	return success;
 }
 
