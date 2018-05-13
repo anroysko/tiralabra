@@ -1,8 +1,8 @@
 #ifndef __UTIL_TWO_DIM_ARRAY_H_
 #define __UTIL_TWO_DIM_ARRAY_H_
 
-#include "vector.h" // Vector
-#include "string.h" // memcpy
+#include <string.h> // memcpy
+#include "array.h" // Vector
 
 /// Struct representing a two-dimensional array
 /// Has the data better aligned than two Vectors inside each other,
@@ -27,26 +27,10 @@ class TwoDimArray {
 		void reserve(int total, int size) {
 			this->total = total;
 			this->size = size;
-			if (size == 0) {
-				data = nullptr;
-				offset = nullptr;
-			} else {
-				this->data = new T[total];
-				this->offset = new int[size];
-			}
+			this->data = new T[total];
+			this->offset = new int[size];
 		}
 
-		/// Clears all data.
-		/// After this the object is in the same state as a default-constructed equivalent.
-		/// Does the same thing as the destructor.
-		void clear() {
-			if (data != nullptr) delete[] data;
-			if (offset != nullptr) delete[] offset;
-			data = nullptr;
-			offset = nullptr;
-			total = 0;
-			size = 0;
-		}
 	public:
 		/// Initializes the struct into a empty state.
 		/// Only useful if you wish to assign to it later.
@@ -62,18 +46,19 @@ class TwoDimArray {
 			// for (int i = 0; i < total; ++i) data[i] = oth.data[i];
 		}
 		/// Move constructor.
-		/// Clears oth.
+		/// Leaves oth in a unspecified state.
 		TwoDimArray(TwoDimArray&& oth) {
 			data = oth.data;
 			offset = oth.offset;
 			total = oth.total;
 			size = oth.size;
 		
-			oth.clear();
+			oth.data = nullptr;
+			oth.offset = nullptr;
 		}
 		/// Initialize with sizes of the arrays.
 		/// Total is the total size of all the arrays.
-		TwoDimArray(int total, const Vector<int>& sizes) {
+		TwoDimArray(int total, const Array<int>& sizes) {
 			reserve(total, sizes.size());
 			for (int i = 0, sum = 0; i < size; sum += sizes[i], ++i) offset[i] = sum;
 		}
@@ -123,8 +108,11 @@ class TwoDimArray {
 		}
 		/// Copy assignment.
 		TwoDimArray& operator=(const TwoDimArray& oth) {
-			clear();
+			if (data != nullptr) data = nullptr;
+			if (offset != nullptr) offset = nullptr;
+
 			reserve(oth.total, oth.size);
+
 			memcpy(data, oth.data, sizeof(T) * total);
 			memcpy(offset, oth.offset, sizeof(int) * size);
 			// for (int i = 0; i < total; ++i) data[i] = oth.data[i];
@@ -133,8 +121,9 @@ class TwoDimArray {
 		/// Move assignment.
 		/// Clears oth.
 		TwoDimArray& operator=(TwoDimArray&& oth) {
-			clear();
-
+			if (data != nullptr) data = nullptr;
+			if (offset != nullptr) offset = nullptr;
+			
 			size = oth.size;
 			total = oth.total;
 			data = oth.data;

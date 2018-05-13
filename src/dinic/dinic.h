@@ -1,7 +1,7 @@
 #ifndef __DINIC_DINIC_H_
 #define __DINIC_DINIC_H_
 
-#include "./../util/vector.h" // Vector
+#include "./../util/array.h" // Array
 #include "./../util/two_dim_array.h" // TwoDimArray
 
 /// Graph representing a max-flow problem in a directed graph
@@ -16,13 +16,13 @@ struct FlowGraph {
 	int sink;
 
 	/// Source of edge i.
-	Vector<int> edge_source;
+	Array<int> edge_source;
 	/// Target of edge i.
-	Vector<int> edge_target;
+	Array<int> edge_target;
 	/// Current flow over edge i.
-	Vector<int> flow;
+	Array<int> flow;
 	/// Max flow over edge i.
-	Vector<int> capacity;
+	Array<int> capacity;
 	/// What edges leave and come to each node?
 	TwoDimArray<int> edges;
 	

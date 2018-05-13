@@ -7,7 +7,7 @@
 #include <utility>
 #include "./../../splaytree/splay_functions.h"
 #include "./../../splaytree/splay_tree.h"
-#include "./../test_util.h"
+#include "./../test_utils.h"
 #include "splay_tests.h"
 
 // Build SplayTree from its traversal
@@ -297,6 +297,17 @@ bool testErase() {
 	return success;
 }
 
+bool testUnitTests(const std::string& file_in, const std::string& file_out) {
+	if (!testZig()) return false;
+	if (!testZag()) return false;
+	if (!testSplay()) return false;
+	if (!testJoin()) return false;
+	if (!testSplit()) return false;
+	if (!testInsert()) return false;
+	if (!testErase()) return false;
+	return true;
+}
+
 bool testRandomSplayTreeOperations(int ini_nodes, int queries, int maxval, int seed) {
 	std::vector<int> comp (ini_nodes);
 	SplayTree tree;
@@ -387,10 +398,10 @@ bool testRandomSplayTreeOperations(int ini_nodes, int queries, int maxval, int s
 	}
 	return true;
 }
-bool testRandomSplaySmall() {
+bool testRandomSplaySmall(const std::string& file_in, const std::string& file_out) {
 	return testRandomSplayTreeOperations(10, 50, 10, 0);
 }
-bool testRandomSplayMedium() {
+bool testRandomSplayMedium(const std::string& file_in, const std::string& file_out) {
 	return testRandomSplayTreeOperations(1000, 5000, 1000000000, 1);
 }
 
@@ -456,38 +467,36 @@ bool timeRandomSplayTreeOperations(int ini_nodes, int queries, int maxval, int s
 	volatile int tmp = total; // This is to make sure that the compiler doesn't optimize out any operations
 	return true;
 }
-bool timeRandomSplayMedium() {
+bool timeRandomSplayMedium(const std::string& file_in, const std::string& file_out) {
 	return timeRandomSplayTreeOperations(10000, 10000, 100, 4);
 }
-bool timeRandomSplayLarge() {
+bool timeRandomSplayLarge(const std::string& file_in, const std::string& file_out) {
 	return timeRandomSplayTreeOperations(1000000, 1000000, 1000, 5);
 }
-bool timeHardRandomSplayMedium() {
+bool timeHardRandomSplayMedium(const std::string& file_in, const std::string& file_out) {
 	return timeRandomSplayTreeOperations(10000, 10000, 100, 6, 1000);
 }
-bool timeHardRandomSplayLarge() {
+bool timeHardRandomSplayLarge(const std::string& file_in, const std::string& file_out) {
 	return timeRandomSplayTreeOperations(500000, 1000000, 1000, 7, 100000);
 }
 
-TestGroup getSplayTests() {
-	std::vector<Test> tests;
-	tests.push_back(makeTest(testZig, "test SplayNode Zig"));
-	tests.push_back(makeTest(testZag, "test SplayNode Zag"));
-	tests.push_back(makeTest(testSplay, "test SplayNode Splay"));
-	tests.push_back(makeTest(testJoin, "test SplayNode Join"));
-	tests.push_back(makeTest(testSplit, "test SplayNode Split"));
-	tests.push_back(makeTest(testInsert, "test SplayTree Insert"));
-	tests.push_back(makeTest(testErase, "test SplayTree Erase"));
-	tests.push_back(makeTest(testRandomSplaySmall, "test SplayTree RandomSmall"));
-	tests.push_back(makeTest(testRandomSplayMedium, "test SplayTree RandomMedium"));
-	return makeTestGroup(tests, "splay tree tests", true);
+void genSplayTests(bool create_tests, const std::string& base_path) {
+	// Do nothing
 }
 
-TestGroup getSplayTimeTests() {
-	std::vector<Test> tests;
-	tests.push_back(makeTest(timeRandomSplayMedium, "time SplayTree RandomMedium", true));
-	tests.push_back(makeTest(timeRandomSplayLarge, "time SplayTree RandomLarge", true));
-	tests.push_back(makeTest(timeHardRandomSplayMedium, "time SplayTree HardRandomMedium", true));
-	tests.push_back(makeTest(timeHardRandomSplayLarge, "time SplayTree HardRandomLarge", true));
-	return makeTestGroup(tests, "splay tree performance tests", true);
+TestGroup getSplayTests(bool perf_tests, const std::string& base_path) {
+	if (perf_tests) {
+		std::vector<Test> tests (4);
+		tests[0] = makeTest(timeRandomSplayMedium, "","","splay_random_medium", true);
+		tests[1] = makeTest(timeRandomSplayLarge, "","","splay_random_large", true);
+		tests[2] = makeTest(timeHardRandomSplayMedium, "","","splay_hard_random_medium", true);
+		tests[3] = makeTest(timeHardRandomSplayLarge, "","","splay_hard_random_large", true);
+		return makeTestGroup(tests,"splay tree performance tests", true);
+	} else {
+		std::vector<Test> tests(3);
+		tests[0] = makeTest(testUnitTests, "","","Splay unit tests", false);
+		tests[1] = makeTest(testRandomSplaySmall, "","","splay_random_small", false);
+		tests[2] = makeTest(testRandomSplayMedium, "","","splay_random_medium", false);
+		return makeTestGroup(tests,"splay tree tests", true);
+	}
 }

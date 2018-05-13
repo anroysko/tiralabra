@@ -1,0 +1,94 @@
+********************  RUN PERFORMANCE TESTS   ********************
+----splay tree performance tests:
+        splay_random_medium:      0.0064
+        splay_random_large:       1.5254
+        splay_hard_random_medium: 0.0187
+        splay_hard_random_large:  3.2261
+    splay tree performance tests: All tests correct
+    splay tree performance tests: 4.7766
+----link/cut performance tests:
+        ./testing/tests/link_cut_random_11.out:      0.2218
+        ./testing/tests/link_cut_random_12.out:      0.0384
+        ./testing/tests/link_cut_random_13.out:      0.0767
+        ./testing/tests/link_cut_random_14.out:      0.1727
+        ./testing/tests/link_cut_random_15.out:      0.3944
+        ./testing/tests/link_cut_random_16.out:      0.8868
+        ./testing/tests/link_cut_random_17.out:      3.5183
+        ./testing/tests/link_cut_random_18.out:      5.1386
+        ./testing/tests/link_cut_random_19.out:      12.0282
+        ./testing/tests/link_cut_random_20.out:      20.1064
+        ./testing/tests/link_cut_random_deep_11.out: 0.0824
+        ./testing/tests/link_cut_random_deep_12.out: 0.0328
+        ./testing/tests/link_cut_random_deep_13.out: 0.0728
+        ./testing/tests/link_cut_random_deep_14.out: 0.1660
+        ./testing/tests/link_cut_random_deep_15.out: 0.3906
+        ./testing/tests/link_cut_random_deep_16.out: 0.8910
+        ./testing/tests/link_cut_random_deep_17.out: 1.9109
+        ./testing/tests/link_cut_random_deep_18.out: 4.1458
+        ./testing/tests/link_cut_random_deep_19.out: 9.1539
+        ./testing/tests/link_cut_random_deep_20.out: 20.6557
+        ./testing/tests/link_cut_wide_11.out:        0.0819
+        ./testing/tests/link_cut_wide_12.out:        0.0690
+        ./testing/tests/link_cut_wide_13.out:        0.1342
+        ./testing/tests/link_cut_wide_14.out:        0.3291
+        ./testing/tests/link_cut_wide_15.out:        0.7888
+        ./testing/tests/link_cut_wide_16.out:        1.8655
+        ./testing/tests/link_cut_wide_17.out:        4.3427
+        ./testing/tests/link_cut_wide_18.out:        10.2635
+        ./testing/tests/link_cut_wide_19.out:        22.8810
+        ./testing/tests/link_cut_wide_20.out:        51.1018
+    link/cut performance tests: All tests correct
+    link/cut performance tests: 171.9429
+----dinic performance tests:
+        ./testing/tests/dinic_random_11_dfs.out:      0.0140
+        ./testing/tests/dinic_random_11_link_cut.out: 0.0158
+        ./testing/tests/dinic_random_11_mixed.out:    0.0176
+        ./testing/tests/dinic_random_12_dfs.out:      0.0378
+        ./testing/tests/dinic_random_12_link_cut.out: 0.0357
+        ./testing/tests/dinic_random_12_mixed.out:    0.0358
+        ./testing/tests/dinic_random_13_dfs.out:      0.0757
+        ./testing/tests/dinic_random_13_link_cut.out: 0.0876
+        ./testing/tests/dinic_random_13_mixed.out:    0.0798
+        ./testing/tests/dinic_random_14_dfs.out:      0.2117
+        ./testing/tests/dinic_random_14_link_cut.out: 0.2433
+        ./testing/tests/dinic_random_14_mixed.out:    0.2155
+        ./testing/tests/dinic_random_15_dfs.out:      0.5369
+        ./testing/tests/dinic_random_15_link_cut.out: 0.6032
+        ./testing/tests/dinic_random_15_mixed.out:    0.5484
+        ./testing/tests/dinic_random_16_dfs.out:      1.2040
+        ./testing/tests/dinic_random_16_link_cut.out: 1.2162
+        ./testing/tests/dinic_random_16_mixed.out:    1.0561
+        ./testing/tests/dinic_random_17_dfs.out:      2.5603
+        ./testing/tests/dinic_random_17_link_cut.out: 2.9598
+        ./testing/tests/dinic_random_17_mixed.out:    2.4041
+        ./testing/tests/dinic_random_18_dfs.out:      5.7680
+        ./testing/tests/dinic_random_18_link_cut.out: 6.4973
+        ./testing/tests/dinic_random_18_mixed.out:    5.9006
+        ./testing/tests/dinic_random_19_dfs.out:      12.6447
+        ./testing/tests/dinic_random_19_link_cut.out: 11.5290
+        ./testing/tests/dinic_random_19_mixed.out:    9.9636
+        ./testing/tests/dinic_random_20_dfs.out:      34.8005
+        ./testing/tests/dinic_random_20_link_cut.out: 32.3210
+        ./testing/tests/dinic_random_20_mixed.out:    27.3310
+        ./testing/tests/dinic_hard_11_dfs.out:        0.0284
+        ./testing/tests/dinic_hard_11_link_cut.out:   0.0094
+        ./testing/tests/dinic_hard_12_dfs.out:        0.1181
+        ./testing/tests/dinic_hard_12_link_cut.out:   0.0328
+        ./testing/tests/dinic_hard_13_dfs.out:        0.3494
+        ./testing/tests/dinic_hard_13_link_cut.out:   0.0587
+        ./testing/tests/dinic_hard_14_dfs.out:        1.3835
+        ./testing/tests/dinic_hard_14_link_cut.out:   0.2210
+        ./testing/tests/dinic_hard_15_dfs.out:        5.7469
+        ./testing/tests/dinic_hard_15_link_cut.out:   0.4370
+        ./testing/tests/dinic_hard_16_dfs.out:        22.1947
+        ./testing/tests/dinic_hard_16_link_cut.out:   1.7647
+        ./testing/tests/dinic_hard_17_dfs.out:        92.2872
+        ./testing/tests/dinic_hard_17_link_cut.out:   4.0694
+        ./testing/tests/dinic_hard_18_link_cut.out:   15.2313
+        ./testing/tests/dinic_hard_19_link_cut.out:   25.0501
+        ./testing/tests/dinic_hard_20_link_cut.out:   88.3538
+    dinic performance tests: All tests correct
+    dinic performance tests: 418.2532
+******************** FINISH PERFORMANCE TESTS ********************
+Errors: 0
+Time: 594.9728

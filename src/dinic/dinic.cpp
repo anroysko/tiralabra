@@ -6,6 +6,7 @@
 #include "dinic.h"
 
 #include <iostream> // TODO: remove
+#include <assert.h> // TODO: remove
 
 FlowGraph::FlowGraph(const FlowGraph& oth) :
 	n(oth.n), m(oth.m), source(oth.source), sink(oth.sink),
@@ -13,26 +14,20 @@ FlowGraph::FlowGraph(const FlowGraph& oth) :
 	flow(oth.flow), capacity(oth.capacity), edges(oth.edges) {
 }
 
-FlowGraph::FlowGraph(int n, int m, int source, int sink, Vector<int>&& edge_source, Vector<int>&& edge_target, Vector<int>&& flow, Vector<int>&& capacity) {
-	this->n = n;
-	this->m = m;
-	this->source = source;
-	this->sink = sink;
-	this->edge_source = edge_source;
-	this->edge_target = edge_target;
-	this->flow = flow;
-	this->capacity = capacity;
+FlowGraph::FlowGraph(int arg_n, int arg_m, int arg_source, int arg_sink, Array<int>&& arg_edge_source, Array<int>&& arg_edge_target, Array<int>&& arg_flow, Array<int>&& arg_capacity) :
+	n(arg_n), m(arg_m), source(arg_source), sink(arg_sink), edge_source(arg_edge_source), edge_target(arg_edge_target), flow(arg_flow), capacity(arg_capacity) {
 
 	// Init edge array from edge data
 	// edges[i][j] = edge, means that the j'th edge coming or leaving from node "i" has index "edge"
-	Vector<int> conns (n, 0);
+	Array<int> conns (n, 0);
 	for (int i = 0; i < m; ++i) {
 		++conns[edge_source[i]];
 		++conns[edge_target[i]];
 	}
+	
 	TwoDimArray<int> tmp (2*m, conns);
 	// Fill tmp
-	Vector<int> inds (n, 0);
+	Array<int> inds (n, 0);
 	for (int i = 0; i < m; ++i) {
 		int es = edge_source[i];
 		int et = edge_target[i];
@@ -41,6 +36,7 @@ FlowGraph::FlowGraph(int n, int m, int source, int sink, Vector<int>&& edge_sour
 		++inds[es];
 		++inds[et];
 	}
+	
 	edges = std::move(tmp);
 }
 
@@ -56,11 +52,11 @@ namespace {
 		TwoDimArray<int> edges;
 		/// Index of active edge for every node.
 		/// Active edge is the outgoing edge from a node that we select when leaving that node.
-		Vector<int> active_inds;
+		Array<int> active_inds;
 
 		/// Initializes a level graph.
 		/// Data still has to be filled afterwards.
-		LevelGraph(int total_edges, const Vector<int>& edge_counts)
+		LevelGraph(int total_edges, const Array<int>& edge_counts)
 			: edges(total_edges, edge_counts), active_inds(edge_counts.size()) {}
 
 		/// Initializes the graph.
@@ -184,7 +180,7 @@ namespace {
 			level_graph->active_inds[i] = -1;
 		}
 
-		Vector<int> dist (n, n);
+		Array<int> dist (n, n);
 		Vector<int> que;
 		que.reserve(n);
 
@@ -207,7 +203,6 @@ namespace {
 							dist[target] = dist[ind] + 1;
 						}
 						++level_graph->active_inds[target];
-						
 						level_graph->edges[target][level_graph->active_inds[target]] = edge;
 					}
 				}
@@ -292,7 +287,7 @@ long long dinic(FlowGraph* flow_graph, int swap_const = 100) {
 	level_graph = &lg;
 
 	// Reserve memory for link/cut tree
-	Vector<DinicLinkCutNode*> link_cut_nodes (n);
+	Array<DinicLinkCutNode*> link_cut_nodes (n);
 	for (int i = 0; i < n; ++i) link_cut_nodes[i] = new DinicLinkCutNode(0, i);
 
 	// Define for convenience
