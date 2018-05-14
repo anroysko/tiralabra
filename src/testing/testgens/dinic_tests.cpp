@@ -154,7 +154,7 @@ namespace {
 			// Between a nodes
 			for (int j = 0; j < a; ++j) {
 				edge_source[m] = right_as[i];
-				edge_target[m] = left_as[i];
+				edge_target[m] = left_as[j];
 				capacity[m] = 1;
 				++m;
 			}
