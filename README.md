@@ -15,6 +15,8 @@ Projektissa on toteutettu Dinic'n algoritmi maximum flow -ongelman ratkaisemisee
 * [Viikko 2](https://github.com/anroysko/tiralabra/blob/master/doc/weekly_reports/week2.md)
 * [Viikko 3](https://github.com/anroysko/tiralabra/blob/master/doc/weekly_reports/week3.md)
 * [Viikko 4](https://github.com/anroysko/tiralabra/blob/master/doc/weekly_reports/week4.md)
+* Viikko 5: Kipeänä :(
+* [Viikko 6](https://github.com/anroysko/tiralabra/blob/master/doc/weekly_reports/week6.md)
 
 ## Komentorivitoiminnot
 Testikattavuusreportin generointiin tarvitaan ohjelma `lcov`
